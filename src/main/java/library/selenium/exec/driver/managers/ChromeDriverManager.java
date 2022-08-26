@@ -4,6 +4,7 @@ package library.selenium.exec.driver.managers;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import library.common.Constants;
 import library.common.Property;
+import library.selenium.exec.driver.factory.Capabilities;
 import library.selenium.exec.driver.factory.DriverContext;
 import library.selenium.exec.driver.factory.DriverManager;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -11,6 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.CapabilityType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ChromeDriverManager extends DriverManager {
@@ -20,10 +26,12 @@ public class ChromeDriverManager extends DriverManager {
     @Override
     public void createDriver() {
         PropertiesConfiguration propertiesConfiguration = Property.getProperties(Constants.RUNTIME_PROP_FILE);
+        ChromeOptions chromeOptions = new ChromeOptions();
+        Capabilities caps = new Capabilities();
 
-        if (Property.getVariable("cukes.webdrivermanager") != null && Property.getVariable("cukes.webdrivermanager").equalsIgnoreCase("true")) {
-            if (Property.getVariable("cukes.chromedriver") != null) {
-                WebDriverManager.chromedriver().driverVersion(Property.getVariable("cukes.chromedriver")).setup();
+        if (Property.getVariable("cukes.webdrivermanager").equalsIgnoreCase("true")) {
+            if (Property.getVariable("cukes.driverversion") != null) {
+                WebDriverManager.chromedriver().driverVersion(Property.getVariable("cukes.driverversion")).setup();
             } else {
                 WebDriverManager.chromedriver().setup();
 
@@ -31,24 +39,14 @@ public class ChromeDriverManager extends DriverManager {
         } else {
             System.setProperty("webdriver.chrome.driver", getDriverPath("chromedriver"));
         }
-        System.setProperty("webdriver.chrome.silentOutput", "true");
-        ChromeOptions chromeOptions = new ChromeOptions();
-
-        for (String option : propertiesConfiguration.getStringArray("options." + DriverContext.getInstance().getBrowserName().replaceAll("\\s", ""))) {
-            chromeOptions.addArguments(option);
+        if (propertiesConfiguration != null) {
+            String arguments = propertiesConfiguration.getString("arguments." + DriverContext.getInstance().getBrowserName().replaceAll("\\s", ""));
+            chromeOptions.addArguments(arguments);
+            chromeOptions.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
         }
+        chromeOptions.merge(caps.getDesiredCapabilities());
 
-        if (propertiesConfiguration.getString("options.chrome.useAutomationExtension") != null &&
-                propertiesConfiguration.getString("options.chrome.useAutomationExtension").equalsIgnoreCase("false")) {
-            chromeOptions.setExperimentalOption("options.chrome.useAutomationExtension", false);
-
-        }
-
-        if (DriverContext.getInstance().getBrowserName().contains("kiosk")) {
-            chromeOptions.addArguments("--kiosk");
-        }
         driver = new ChromeDriver(chromeOptions);
-        driver.manage().window().maximize();
     }
 
     @Override

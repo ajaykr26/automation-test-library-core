@@ -1,4 +1,4 @@
-package library.api;
+package library.api.utils;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;

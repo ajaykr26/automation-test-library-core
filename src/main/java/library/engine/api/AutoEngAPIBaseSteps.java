@@ -2,8 +2,8 @@ package library.engine.api;
 
 import com.intuit.karate.KarateException;
 import com.intuit.karate.Runner;
-import library.api.Constants;
-import library.api.JSONFormatter;
+import library.api.utils.Constants;
+import library.api.utils.JSONFormatter;
 import library.common.FileHelper;
 import library.common.TestContext;
 import library.engine.core.AutoEngCoreBaseStep;

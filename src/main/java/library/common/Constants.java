@@ -23,11 +23,11 @@ public class Constants {
     public static final String CLASSPATH = USER_DIR + "/target/test-classes/";
     public static final String SELENIUM_PATH = BASE_PATH + "config/selenium/";
     public static final String API_OBJECT_FOLDER = "apiobjects";
-    public static final String STORE_UTILS_PATH = "/services/store/";
-    public static final String VALIDATE_UTILS_PATH = "/services/validate/";
-    public static final String SET_UTILS_PATH = "/services/set/";
-    public static final String REMOVE_UTILS_PATH = "/services/remove/";
-    public static final String CALL_UTILS_PATH = "/services/call/";
+    public static final String STORE_UTILS_PATH = "/api/services/store/";
+    public static final String VALIDATE_UTILS_PATH = "/api/services/validate/";
+    public static final String SET_UTILS_PATH = "/api/services/set/";
+    public static final String REMOVE_UTILS_PATH = "/api/services/remove/";
+    public static final String CALL_UTILS_PATH = "/api/services/call/";
     public static final String PAGE_OBJECT_JAR_PATH = USER_DIR + "/target/test-classes/pageobjects/";
     public static final String PAGE_OBJECT_JAVA_PATH = USER_DIR + "/src/test/java/pageobjects/";
     public static final String PAGE_OBJECT_EXTERNAL_JAR_PATH = USER_DIR + "/target/lib/";

@@ -238,19 +238,12 @@ public class AutoEngWebUtils extends AutoEngWebBaseSteps {
     }
 
     @Then("^the user uploads the \"([^\"]*)\" file to the \"([^\"]*)\" element at the \"([^\"]*)\" page$")
-    public void uploadFiles(String filepath, String objectName, String pageName) {
-        filepath = parseValue(filepath);
+    public void uploadFiles(String filename, String objectName, String pageName) {
+        filename = parseValue(filename);
+        String filepath = Constants.TESTDATA_PATH + filename;
         File fileToUpload = new File(filepath);
-        if (!fileToUpload.isAbsolute()) {
-            fileToUpload = new File(Paths.get(Constants.TESTDATA_PATH + filepath).toString());
-        }
         if (fileToUpload.exists()) {
-            final Path pathToFile = fileToUpload.toPath();
-            final String fileContent = replaceParameterValues(FileHelper.getFileAsString(pathToFile.toAbsolutePath().toString(), "\n"));
-            Path tempFileToUpload = FileHelper.writeTempFile(FileHelper.getFileNameWithoutExtension(pathToFile),
-                    FileHelper.getFileNameExtension(pathToFile), fileContent);
-            assert tempFileToUpload != null;
-            getElement(objectName, pageName).sendKeys(tempFileToUpload.toAbsolutePath().toString());
+            getElement(objectName, pageName).sendKeys(filepath);
         } else {
             String message = String.format("file not found at path: %s", fileToUpload);
             logger.error(message);

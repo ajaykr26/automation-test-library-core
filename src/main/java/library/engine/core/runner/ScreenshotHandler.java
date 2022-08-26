@@ -2,8 +2,6 @@ package library.engine.core.runner;
 
 import cucumber.api.Result;
 import io.cucumber.java8.En;
-import library.common.Constants;
-import library.common.Property;
 import library.common.TestContext;
 import library.selenium.exec.driver.factory.DriverContext;
 import org.apache.logging.log4j.LogManager;
@@ -69,7 +67,7 @@ public class ScreenshotHandler implements En {
 
     private File getWebScreenshot() {
         try {
-            if (DriverContext.getInstance().getDriver().getWindowHandle() != null && !(DriverContext.getInstance().getDriver() instanceof HtmlUnitDriver)) {
+            if (DriverContext.getInstance().getDriver().getWindowHandle() != null) {
                 if (waitForPageToLoad) {
                     logger.info("implement");
                 }
