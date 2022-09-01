@@ -2,15 +2,21 @@ package library.selenium.exec.driver.managers;
 
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import library.common.Constants;
 import library.common.Property;
+import library.selenium.exec.driver.factory.Capabilities;
+import library.selenium.exec.driver.factory.DriverContext;
 import library.selenium.exec.driver.factory.DriverManager;
+import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
+import org.openqa.selenium.remote.CapabilityType;
 
 
 public class EdgeDriverManager extends DriverManager {
@@ -19,20 +25,26 @@ public class EdgeDriverManager extends DriverManager {
 
     @Override
     protected void createDriver() {
-        if (Property.getVariable("cukes.webdrivermanager") != null && Property.getVariable("cukes.webdrivermanager").equalsIgnoreCase("true")) {
-            if (Property.getVariable("cukes.msedgedriver") != null) {
-                WebDriverManager.iedriver().driverVersion(Property.getVariable("cukes.msedgedriver")).setup();
+        PropertiesConfiguration propertiesConfiguration = Property.getProperties(Constants.RUNTIME_PROP_FILE);
+        EdgeOptions edgeOptions = new EdgeOptions();
+        Capabilities caps = new Capabilities();
+
+        if (Property.getVariable("cukes.webdrivermanager").equalsIgnoreCase("true")) {
+            if (Property.getVariable("cukes.driverversion") != null) {
+                WebDriverManager.edgedriver().driverVersion(Property.getVariable("cukes.driverversion")).setup();
             } else {
                 WebDriverManager.edgedriver().setup();
 
             }
         } else {
             System.setProperty("webdriver.edge.driver", getDriverPath("msedgedriver"));
-
         }
-        EdgeOptions edgeOptions = new EdgeOptions();
+        if (propertiesConfiguration != null) {
+            String arguments = propertiesConfiguration.getString("arguments." + DriverContext.getInstance().getBrowserName().replaceAll("\\s", ""));
+            edgeOptions.addArguments(arguments);
+        }
+        edgeOptions.merge(caps.getDesiredCapabilities());
         driver = new EdgeDriver(edgeOptions);
-        driver.manage().window().maximize();
     }
 
     @Override

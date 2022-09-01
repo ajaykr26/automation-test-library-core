@@ -1,13 +1,11 @@
 package library.engine.api.steps;
 
 import io.cucumber.java.en.Given;
-import library.api.Constants;
+import library.api.utils.Constants;
 import library.common.TestContext;
 import library.engine.api.AutoEngAPIBaseSteps;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -16,34 +14,39 @@ import static org.apache.commons.lang3.reflect.MethodUtils.invokeMethod;
 
 public class AutoEngAPICall extends AutoEngAPIBaseSteps {
     public static final String FEATURE_NAME = "featureName";
-
-    @Given("^the user sends request using the \"([^\"]*)\" karate feature$")
-    public void sendRequestWithoutTag(String featureName) {
+    @Given("^the user loads request payload from \"([^\"]*)\" file$")
+    public void loadPayload(String filename, String fileType) {
+        if (filename.equalsIgnoreCase("json")){
+            Map<String, Object> args = getAPICallParamList("ALL");
+        }
+    }
+ @Given("^the user calls \"([^\"]*)\" api service$")
+    public void callServicesWithoutTagName(String featureName) {
         featureName = getAPIObject(featureName);
         Map<String, Object> args = getAPICallParamList("ALL");
         args.put(FEATURE_NAME, featureName);
         callAPIWithoutTag(featureName, args);
     }
 
-    @Given("^the user sends request using the \"([^\"]*)\" karate feature with parameters \"([^\"]*)\"$")
-    public void sendRequestWithoutTag(String featureName, String paramList) {
+    @Given("^the user calls \"([^\"]*)\" api service with tag name \"([^\"]*)\"$")
+    public void callServicesWithTagName(String featureName, String tagName) {
+        featureName = getAPIObject(featureName);
+        Map<String, Object> args = getAPICallParamList("ALL");
+        args.put(FEATURE_NAME, featureName);
+        args.put("tagName", tagName);
+        callAPIWithTagName(featureName, args);
+    }
+
+    @Given("^the user calls \"([^\"]*)\" api service with parameters \"([^\"]*)\"$")
+    public void callServicesWithParams(String featureName, String paramList) {
         featureName = getAPIObject(featureName);
         Map<String, Object> args = getAPICallParamList(paramList);
         args.put(FEATURE_NAME, featureName);
         callAPIWithoutTag(featureName, args);
     }
 
-    @Given("^the user sends request using the \"([^\"]*)\" karate feature with tag \"([^\"]*)\"$")
-    public void sendRequestWithTag(String featureName, String tagName) {
-        featureName = getAPIObject(featureName);
-        Map<String, Object> args = getAPICallParamList("ALL");
-        args.put(FEATURE_NAME, featureName);
-        args.put("tagName", tagName);
-        callAPIWithTag(featureName, args);
-    }
-
-    @Given("^the user calls list of API using \"([^\"]*)\" karate features$")
-    public void callListOfAPI(String featureList) {
+    @Given("^the user calls list of \"([^\"]*)\" api services$")
+    public void callListOfServices(String featureList) {
         StringTokenizer stringTokenizer = new StringTokenizer(featureList, "|");
         Map<String, Object> args = TestContext.getInstance().testdata();
         while (stringTokenizer.hasMoreTokens()) {//----------------------
@@ -52,7 +55,7 @@ public class AutoEngAPICall extends AutoEngAPIBaseSteps {
         }
     }
 
-    @Given("^the user replaces parameter value in the \"([^\"]*)\" API request XML file and save to the \"([^\"]*)\" new XML file $")
+    @Given("^the user replaces parameter value in the \"([^\"]*)\" api request xml file and save to the new xml file \"([^\"]*)\"$")
     public void callListOfAPI(String xmlTemplate, String xmlTarget) throws IOException {
         replaceParamsInXMLFile(xmlTemplate, xmlTarget);
     }

@@ -98,7 +98,7 @@ public class AssertHelper {
     }
 
     private String getResultMessage(String actual, String expected) {
-        return String.format("%s -> expecting \"%s\" to be %s \"%s\".", comparisonType.get(), actual, comparisonOperator, expected);
+        return String.format("%s -> expecting \"%s\" to be %s \"%s\".", comparisonType.get(), actual, comparisonOperator.get(), expected);
     }
 
     private void setExpectedAndActual(Object actual, Object expected, String validationId) {
@@ -110,7 +110,7 @@ public class AssertHelper {
         logger.debug(expectedResult);
         logger.debug(actualResult);
 
-        TestContext.getInstance().testdataPut(VALIDATION_TAG + validationId, getResultMessage(actual.toString(), expected.toString()));
+        TestContext.getInstance().testdataPut(VALIDATION_TAG + validationId, getResultMessage(actualResult, expectedResult));
     }
 
     private Object getResultAsString(Object result) {

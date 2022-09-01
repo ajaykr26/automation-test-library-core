@@ -2,14 +2,23 @@ package library.engine.api;
 
 import com.intuit.karate.KarateException;
 import com.intuit.karate.Runner;
-import library.api.Constants;
-import library.api.JSONFormatter;
+import com.intuit.karate.core.KarateParser;
+import library.api.utils.Constants;
+import library.api.utils.JSONFormatter;
 import library.common.FileHelper;
 import library.common.TestContext;
 import library.engine.core.AutoEngCoreBaseStep;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.testng.reporters.Files;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -89,6 +98,19 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         }
     }
 
+    protected void storeAPIAttribute(String featureName, Map<String, Object> args, String dictionaryKey) {
+        try {
+            String file = String.format(CLASSPATH_API_FEATURE_FILES, Constants.SET_UTILS_PATH, featureName);
+            Map<String, Object> result = runAPIFeatureFile(file, args);//------------------------
+            TestContext.getInstance().testdataPut(dictionaryKey, result.get("updatedJson"));
+            getReporter().addStepLog(String.format("set %s attribute to %s", result.get("replaceVal")));
+        } catch (KarateException karateException) {
+            getReporter().addStepLog(STATUS_FAIL, karateException.getMessage());
+            logger.error(karateException.getMessage());
+            throw karateException;
+        }
+    }
+
     public Map runAPIFeatureFile(String path, Map<String, Object> args) {
         return Runner.runFeature(path, args, true);
     }
@@ -141,12 +163,16 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
             TestContext.getInstance().setActiveWindowType(API);
 
             Map<String, Object> result = runAPIFeatureFile(pathToFeature, args);
-            TestContext.getInstance().testdataPut(RESPONSE_KEY, result.get(RESPONSE));
+
             TestContext.getInstance().testdataPut(RESPONSE_STATUS_KEY, result.get(RESPONSE_STATUS));
+            logger.info("{}: {}", RESPONSE_STATUS, result.get(RESPONSE_STATUS));
+            TestContext.getInstance().testdataPut(RESPONSE_HEADER_KEY, result.get(RESPONSE_HEADER));
+            TestContext.getInstance().testdataPut(RESPONSE_KEY, result.get(RESPONSE));
+            logger.info("{}: {}", RESPONSE, JSONFormatter.formatJSON(result.get(RESPONSE)));
+
             if (result.get(RESPONSE_XML) != null) {
                 TestContext.getInstance().testdataPut(RESPONSE_XML_KEY, result.get(RESPONSE_XML));
             }
-            TestContext.getInstance().testdataPut(RESPONSE_HEADER_KEY, result.get(RESPONSE_HEADER));
             logRequestResponseData(result);
         } catch (KarateException karateException) {
             getReporter().addStepLog(STATUS_FAIL, "Step Failed: " + args.get("featureName") + "execution is failed. see error message: " + karateException.getMessage());
@@ -160,7 +186,20 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         logAndReportDataTable("API request Headers: ", reportInfo.get(REQUEST_HEADERS));
         logAndReportJSON("API request body: ", reportInfo.get(REQUEST_BODY));
         logAndReportText("API response code: %s", reportInfo.get(RESPONSE_STATUS));
-        logAndReportJSON("API response: ", reportInfo.get(RESPONSE));
+        logAndReportJSON("API response JSON: ", reportInfo.get(RESPONSE));
+        if (result.get(RESPONSE_XML) != null) {
+            logAndReportText("API response XML: %s", reportInfo.get(RESPONSE));
+        }
+
+    }
+
+    private void loadRequestResponseData(Map<String, Object> result) {
+        Map<String, Object> reportInfo = getReportInfo(result);
+        logAndReportText("API request URI: ", reportInfo.get(REQUEST_URI));
+        logAndReportDataTable("API request Headers: ", reportInfo.get(REQUEST_HEADERS));
+        logAndReportJSON("API request body: ", reportInfo.get(REQUEST_BODY));
+        logAndReportText("API response code: %s", reportInfo.get(RESPONSE_STATUS));
+        logAndReportJSON("API response JSON: ", reportInfo.get(RESPONSE));
         if (result.get(RESPONSE_XML) != null) {
             logAndReportText("API response XML: %s", reportInfo.get(RESPONSE));
         }
@@ -234,7 +273,7 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
 
     }
 
-    protected void callAPIWithTag(String featureName, Map<String, Object> args) {
+    protected void callAPIWithTagName(String featureName, Map<String, Object> args) {
         String pathToFeature = getPathToFeature(featureName);
         if (pathToFeature != null) {
             args.put("fullPathToFeature", String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, pathToFeature));
@@ -242,7 +281,7 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         } else {
             logger.warn("unable to get path to feature");
         }
-        callAPI(String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, "callAPI.feature"), args);
+        callAPI(String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, "callAPIWithTagName.feature"), args);
     }
 
     protected void replaceParamsInXMLFile(String xmlTemplateFile, String xmlTarget) throws IOException {
@@ -271,6 +310,20 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
             final String newFileName = Paths.get(String.format("%s/%s.xml", Paths.get(pathToXmlTemplate).getParent().toString(), xmlTarget)).toAbsolutePath().toString();
             Files.writeFile(templateXMLAsString, new File(newFileName));
         }
+    }
+
+    protected String getValueFromXmlStringByXpath(String xmlString, String xpath) {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = null;
+        try {
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(xmlString);
+            XPath xPath = XPathFactory.newInstance().newXPath();
+            return xPath.compile(xpath).evaluate(document);
+        } catch (ParserConfigurationException | XPathExpressionException | IOException | SAXException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
