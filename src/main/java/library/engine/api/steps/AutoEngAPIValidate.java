@@ -1,5 +1,6 @@
 package library.engine.api.steps;
 
+import com.jayway.jsonpath.JsonPath;
 import io.cucumber.java.en.Given;
 import library.api.utils.JSONFormatter;
 import library.common.JSONHelper;
@@ -11,6 +12,7 @@ import library.engine.core.validator.ComparisonType;
 import org.json.JSONArray;
 
 
+import static library.api.utils.XmlHelper.getValueFromXmlDocumentByXpath;
 import static library.engine.core.AutoEngCoreParser.parseValue;
 
 public class AutoEngAPIValidate extends AutoEngAPIBaseSteps {
@@ -23,6 +25,19 @@ public class AutoEngAPIValidate extends AutoEngAPIBaseSteps {
         validator.performValidation(actualResult, valueToFind, validationId, "validation successful");
     }
 
+    @Given("^the user validates that the value at jsonpath \"([^\"]*)\" in the api response \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
+    public void setAttributeInPayload(String jsonPath, String dictionaryKey) {
+        dictionaryKey = parseDictionaryKey(dictionaryKey);
+        String valueToStore = JsonPath.read(TestContext.getInstance().testdataGet(RESPONSE_KEY), jsonPath);
+        TestContext.getInstance().testdataPut(dictionaryKey, valueToStore);
+    }
+
+    @Given("^the user validates that the value at xpath \"([^\"]*)\" in the api response \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
+    public void storeValueFromXmlResponse(String xpath, String dictionaryKey) {
+        dictionaryKey = parseDictionaryKey(dictionaryKey);
+        String valueToStore = getValueFromXmlDocumentByXpath(TestContext.getInstance().testdataGet(RESPONSE_XML_KEY).toString(), xpath);
+        TestContext.getInstance().testdataPut(dictionaryKey, valueToStore);
+    }
 
 
 }

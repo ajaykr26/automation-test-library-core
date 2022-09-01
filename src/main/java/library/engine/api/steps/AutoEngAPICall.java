@@ -6,6 +6,7 @@ import library.common.TestContext;
 import library.engine.api.AutoEngAPIBaseSteps;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -31,7 +32,7 @@ public class AutoEngAPICall extends AutoEngAPIBaseSteps {
     @Given("^the user calls \"([^\"]*)\" api service with tag name \"([^\"]*)\"$")
     public void callServicesWithTagName(String featureName, String tagName) {
         featureName = getAPIObject(featureName);
-        Map<String, Object> args = getAPICallParamList("ALL");
+        Map<String, Object> args = new HashMap<>();
         args.put(FEATURE_NAME, featureName);
         args.put("tagName", tagName);
         callAPIWithTagName(featureName, args);

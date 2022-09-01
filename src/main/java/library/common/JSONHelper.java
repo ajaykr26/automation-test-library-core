@@ -89,7 +89,7 @@ public class JSONHelper {
             }
             return map;
         } catch (NullPointerException exception) {
-            logger.debug("no data found in json file");
+            logger.debug("empty data found in json file");
             return map;
         }
     }

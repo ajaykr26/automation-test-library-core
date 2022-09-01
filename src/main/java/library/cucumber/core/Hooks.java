@@ -6,7 +6,9 @@ import library.common.*;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -45,10 +47,12 @@ public class Hooks implements En {
     private void loadTestDataFromJsonFile(String scenario) {
         String featureName = System.getProperty("fw.featureName");
         String dataFileJSON = Constants.FEATURE_PATH + featureName + ".json";
-
-        Map<String, String> jsonDataTable = JSONHelper.getJSONToMap(JSONHelper.getJSONObject(dataFileJSON, scenario));
+        JSONObject jsonObject = JSONHelper.getJSONObject(dataFileJSON, scenario);
+        Map<String, String> jsonDataTable = new HashMap<>();
+        if (jsonObject != null){
+            jsonDataTable= JSONHelper.getJSONToMap(jsonObject);
+        }
         TestContext.getInstance().testdata().putAll(jsonDataTable);
-
     }
 
     private void loadTestDataFromExcelFile(String scenario) {

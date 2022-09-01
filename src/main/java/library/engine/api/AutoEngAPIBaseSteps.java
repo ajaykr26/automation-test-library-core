@@ -11,17 +11,20 @@ import library.engine.core.AutoEngCoreBaseStep;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.testng.reporters.Files;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.Node;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,7 +56,7 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     protected static final String REQUEST_URI = "requestURI";
     protected static final String REQUEST_HEADERS = "requestHeaders";
     protected static final String REQUEST_BODY = "requestBody";
-    protected static final String RESPONSE_XML = "responseAsXml";
+    protected static final String RESPONSE_XML = "responseXml";
     protected static final String RESPONSE_XML_KEY = "responseXMLKey";
     protected static final String WITH_PARENT = "withParent";
     protected static final String PARENT_FEATURE_PATTERN = "%s%s.feature";
@@ -167,11 +170,13 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
             TestContext.getInstance().testdataPut(RESPONSE_STATUS_KEY, result.get(RESPONSE_STATUS));
             logger.info("{}: {}", RESPONSE_STATUS, result.get(RESPONSE_STATUS));
             TestContext.getInstance().testdataPut(RESPONSE_HEADER_KEY, result.get(RESPONSE_HEADER));
-            TestContext.getInstance().testdataPut(RESPONSE_KEY, result.get(RESPONSE));
-            logger.info("{}: {}", RESPONSE, JSONFormatter.formatJSON(result.get(RESPONSE)));
 
             if (result.get(RESPONSE_XML) != null) {
                 TestContext.getInstance().testdataPut(RESPONSE_XML_KEY, result.get(RESPONSE_XML));
+                logger.info("{}: {}", RESPONSE_XML, JSONFormatter.formatJSON(result.get(RESPONSE_XML)));
+            } else {
+                TestContext.getInstance().testdataPut(RESPONSE_KEY, result.get(RESPONSE));
+                logger.info("{}: {}", RESPONSE, JSONFormatter.formatJSON(result.get(RESPONSE)));
             }
             logRequestResponseData(result);
         } catch (KarateException karateException) {
@@ -186,9 +191,11 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         logAndReportDataTable("API request Headers: ", reportInfo.get(REQUEST_HEADERS));
         logAndReportJSON("API request body: ", reportInfo.get(REQUEST_BODY));
         logAndReportText("API response code: %s", reportInfo.get(RESPONSE_STATUS));
-        logAndReportJSON("API response JSON: ", reportInfo.get(RESPONSE));
         if (result.get(RESPONSE_XML) != null) {
-            logAndReportText("API response XML: %s", reportInfo.get(RESPONSE));
+            logAndReportText("API response XML: %s", reportInfo.get(RESPONSE_XML));
+        }else {
+            logAndReportJSON("API response JSON: ", reportInfo.get(RESPONSE));
+
         }
 
     }
@@ -312,18 +319,5 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         }
     }
 
-    protected String getValueFromXmlStringByXpath(String xmlString, String xpath) {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = null;
-        try {
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(xmlString);
-            XPath xPath = XPathFactory.newInstance().newXPath();
-            return xPath.compile(xpath).evaluate(document);
-        } catch (ParserConfigurationException | XPathExpressionException | IOException | SAXException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 }

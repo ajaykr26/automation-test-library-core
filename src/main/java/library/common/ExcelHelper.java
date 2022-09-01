@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ExcelHelper {
-    private static final String EXCEPTION_PROCESSING_FILE = "unable to load data from excel file.";
+    private static final String EXCEPTION_PROCESSING_FILE = "empty data found in excel file.";
 
     private ExcelHelper() {
 
@@ -92,8 +92,10 @@ public class ExcelHelper {
                 currentRowNum += 2;
                 dataMap.put(dataset, mapTemp);
             }
-        } catch (Exception exception) {
-            getLogger().debug(EXCEPTION_PROCESSING_FILE);
+        } catch (FileNotFoundException exception) {
+            getLogger().debug("StaticTestData.xlsx file not found. returning empty data.");
+        } catch (IOException | NullPointerException ioException) {
+            getLogger().debug("{} worksheet not found in StaticTestData.xlsx file. returning empty data.", worksheet);
         }
         return dataMap;
     }
