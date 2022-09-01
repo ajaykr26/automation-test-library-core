@@ -9,7 +9,7 @@ import org.testng.annotations.AfterTest;
                 "io.qameta.allure.cucumber4jvm.AllureCucumber4Jvm",
                 "json:target/cucumber-reports/runReport.json",
                 "rerun:target/failed-scenario/failed-scenario.txt"},
-        features = {"classpath:features" })
+        features = {"classpath:features", "classpath:apiobjects" })
 public class AutoEngBaseTest extends BaseTest {
 
 }

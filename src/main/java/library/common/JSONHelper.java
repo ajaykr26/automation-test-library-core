@@ -1,6 +1,7 @@
 package library.common;
 
 import com.google.gson.*;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -49,16 +50,17 @@ public class JSONHelper {
             JSONTokener token = new JSONTokener(reader);
             return (JSONObject) (key.length > 0 ? new JSONObject(token).get(key[0]) : new JSONObject(token));
         } catch (FileNotFoundException | JSONException e) {
-            logger.error(e);
+            logger.info("{}.json file not found. returning empty data", System.getProperty("fw.featureName"));
             return null;
         }
     }
+
 
     public static JSONArray getJSONArray(String filepath, String... key) {
         try {
             FileReader reader = new FileReader(filepath);
             JSONTokener token = new JSONTokener(reader);
-            return (JSONArray)(key.length > 0 ? new JSONObject(token).get(key[0]) : new JSONObject(token));
+            return (JSONArray) (key.length > 0 ? new JSONObject(token).get(key[0]) : new JSONObject(token));
         } catch (FileNotFoundException e) {
             logger.error(e);
             return null;

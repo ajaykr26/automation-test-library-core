@@ -42,10 +42,8 @@ public class ChromeDriverManager extends DriverManager {
         if (propertiesConfiguration != null) {
             String arguments = propertiesConfiguration.getString("arguments." + DriverContext.getInstance().getBrowserName().replaceAll("\\s", ""));
             chromeOptions.addArguments(arguments);
-            chromeOptions.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
         }
         chromeOptions.merge(caps.getDesiredCapabilities());
-
         driver = new ChromeDriver(chromeOptions);
     }
 

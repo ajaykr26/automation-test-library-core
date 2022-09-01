@@ -42,7 +42,6 @@ public class EdgeDriverManager extends DriverManager {
         if (propertiesConfiguration != null) {
             String arguments = propertiesConfiguration.getString("arguments." + DriverContext.getInstance().getBrowserName().replaceAll("\\s", ""));
             edgeOptions.addArguments(arguments);
-            edgeOptions.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
         }
         edgeOptions.merge(caps.getDesiredCapabilities());
         driver = new EdgeDriver(edgeOptions);

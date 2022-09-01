@@ -40,7 +40,6 @@ public class FirefoxDriverManager extends DriverManager {
         if (propertiesConfiguration != null) {
             String arguments = propertiesConfiguration.getString("arguments." + DriverContext.getInstance().getBrowserName().replaceAll("\\s", ""));
             firefoxOptions.addArguments(arguments);
-            firefoxOptions.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
         }
         firefoxOptions.merge(caps.getDesiredCapabilities());
         driver = new FirefoxDriver(firefoxOptions);

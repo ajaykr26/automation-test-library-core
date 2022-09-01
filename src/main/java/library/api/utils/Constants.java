@@ -9,6 +9,7 @@ public class Constants {
 
     public static final String USER_DIR = System.getProperty("user.dir");
     public static final String GENERATED_CLASSPATH = USER_DIR + "/target/test-classes/";
+//    public static final String API_OBJECT_FOLDER = "apiobjects";
     public static final String API_OBJECT_FOLDER = "apiobjects";
     public static final String API_OBJECT_PATH = GENERATED_CLASSPATH + API_OBJECT_FOLDER + File.separator;
     public static final String ENVIRONMENT_PATH = USER_DIR + "/src/test/resources/config/environment";

@@ -7,9 +7,6 @@ import library.engine.api.AutoEngAPIBaseSteps;
 import java.util.HashMap;
 import java.util.Map;
 
-import static library.engine.core.AutoEngCoreParser.parseDictionaryKey;
-import static library.engine.core.AutoEngCoreParser.parseValueToObject;
-
 public class AutoEngAPISet extends AutoEngAPIBaseSteps {
 
     @Given("^the user set \"([^\"]*)\" to \"([^\"]*)\" within parent attribute \"([^\"]*)\" in the API response at key \"([^\"]*)\"$")
@@ -24,6 +21,7 @@ public class AutoEngAPISet extends AutoEngAPIBaseSteps {
         final String featureToRun = getSetFeature(args.get("parentAttributeName").toString(), StoreType.SINGLE);
         setAPIAttribute(featureToRun, args, attributeName, dictionaryKey);
     }
+
 
     @Given("^the user set \"([^\"]*)\" to \"([^\"]*)\" in the API response at key \"([^\"]*)\"$")
     public void setAttributeInPayload(String attributeName, String attributeValue, String dictionaryKey) {
