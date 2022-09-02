@@ -30,7 +30,8 @@ public class AutoEngAPICall extends AutoEngAPIBaseSteps {
     }
 
     @Given("^the user calls \"([^\"]*)\" api service with tag name \"([^\"]*)\"$")
-    public void callServicesWithTagName(String featureName, String tagName) {
+    public void
+    callServicesWithTagName(String featureName, String tagName) {
         featureName = getAPIObject(featureName);
         Map<String, Object> args = new HashMap<>();
         args.put(FEATURE_NAME, featureName);

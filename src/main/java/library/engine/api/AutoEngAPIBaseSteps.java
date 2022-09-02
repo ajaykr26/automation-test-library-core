@@ -167,15 +167,15 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
 
             Map<String, Object> result = runAPIFeatureFile(pathToFeature, args);
 
-            TestContext.getInstance().testdataPut(RESPONSE_STATUS_KEY, result.get(RESPONSE_STATUS));
+            TestContext.getInstance().testdataPut(RESPONSE_STATUS, result.get(RESPONSE_STATUS));
             logger.info("{}: {}", RESPONSE_STATUS, result.get(RESPONSE_STATUS));
-            TestContext.getInstance().testdataPut(RESPONSE_HEADER_KEY, result.get(RESPONSE_HEADER));
+            TestContext.getInstance().testdataPut(RESPONSE_HEADER, result.get(RESPONSE_HEADER));
 
             if (result.get(RESPONSE_XML) != null) {
-                TestContext.getInstance().testdataPut(RESPONSE_XML_KEY, result.get(RESPONSE_XML));
+                TestContext.getInstance().testdataPut(RESPONSE_XML, result.get(RESPONSE_XML));
                 logger.info("{}: {}", RESPONSE_XML, JSONFormatter.formatJSON(result.get(RESPONSE_XML)));
             } else {
-                TestContext.getInstance().testdataPut(RESPONSE_KEY, result.get(RESPONSE));
+                TestContext.getInstance().testdataPut(RESPONSE, result.get(RESPONSE));
                 logger.info("{}: {}", RESPONSE, JSONFormatter.formatJSON(result.get(RESPONSE)));
             }
             logRequestResponseData(result);
