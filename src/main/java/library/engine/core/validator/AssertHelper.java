@@ -102,15 +102,11 @@ public class AssertHelper {
     }
 
     private void setExpectedAndActual(Object actual, Object expected, String validationId) {
-        String expectedResult = String.format("Expected value:  \"%s\"", getResultAsString(expected));
-        String actualResult = String.format("Actual value:  \"%s\"", getResultAsString(actual));
+        getReporter().addStepLog(String.format("Expected value:  \"%s\" | Actual value:  \"%s\"", getResultAsString(expected), getResultAsString(actual)));
 
-        getReporter().addStepLog(expectedResult);
-        getReporter().addStepLog(actualResult);
-        logger.debug(expectedResult);
-        logger.debug(actualResult);
+        logger.info(String.format("Expected value:  \"%s\" | Actual value:  \"%s\"", getResultAsString(expected), getResultAsString(actual)));
 
-        TestContext.getInstance().testdataPut(VALIDATION_TAG + validationId, getResultMessage(actualResult, expectedResult));
+        TestContext.getInstance().testdataPut(VALIDATION_TAG + validationId, getResultMessage(getResultAsString(actual).toString(), getResultAsString(expected).toString()));
     }
 
     private Object getResultAsString(Object result) {

@@ -48,9 +48,10 @@ public class Formatter {
         return TestContext.getInstance().testdata().entrySet().stream()
                 .filter(entry -> entry.getKey() != null)
                 .filter(entry -> !entry.getKey().contains("fw."))
-                .filter(entry -> !entry.getKey().contains("VALIDATION."))
+                .filter(entry -> !entry.getKey().contains("Validation."))
                 .filter(entry -> !entry.getKey().contains("priorData"))
                 .filter(entry -> !entry.getKey().matches(".*(?i)(password|pwd|pass|user|username|userid)(?i).*"))
+                .filter(entry -> !entry.getKey().matches(".*(?i)(response|responseXml|responseHeaders|responseStatus)(?i).*"))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

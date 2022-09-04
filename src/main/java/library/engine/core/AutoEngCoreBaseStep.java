@@ -24,7 +24,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static library.engine.core.AutoEngCoreConstants.VALIDATION_TAG;
 import static library.engine.core.objectmatcher.ObjectFinder.*;
+import static library.reporting.ReportFactory.getReporter;
 
 public class AutoEngCoreBaseStep implements En {
 
@@ -38,7 +40,7 @@ public class AutoEngCoreBaseStep implements En {
     protected static final String CLICKED_VALUE = "Clicked value: \"%s\"";
     protected static final String SELECTED_VALUE = "Selected value: \"%s\"";
     protected static final String ENTERED_VALUE = "Entered value: \"%s\"";
-    protected static final String STORED_VALUE = "Stored value: \"%s\" into key \"%s\"";
+    protected static final String STORED_VALUE = "Value stored in data dictionary: {\"%s\":\"%s\"}";
     protected static final String FORMATTED_AS = "Formatted as Day suffix {}";
     protected static final String JSON = ".json";
     protected static final String ZONE = "ZONE_";
@@ -241,4 +243,11 @@ public class AutoEngCoreBaseStep implements En {
         }
         return false;
     }
+
+    protected void storeValueIntoDataDictionary(String valueToStore, String dictionaryKey) {
+        TestContext.getInstance().testdataPut(dictionaryKey, valueToStore);
+        getReporter().addStepLog(String.format(STORED_VALUE, dictionaryKey, valueToStore));
+        logger.info(String.format(STORED_VALUE, dictionaryKey, valueToStore));
+    }
+
 }
