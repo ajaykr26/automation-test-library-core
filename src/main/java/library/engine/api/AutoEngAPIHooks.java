@@ -8,9 +8,7 @@ import library.engine.core.objectmatcher.fetch.FetchFlatFileObjects;
 
 public class AutoEngAPIHooks implements En {
     public AutoEngAPIHooks() {
-        Before(35, (Scenario scenario) -> {
-            TestContext.getInstance().setOfAPI().addAll(FetchFlatFileObjects.populateListOfAPIObjects());
-        });
+        Before(35, (Scenario scenario) -> TestContext.getInstance().setOfAPI().addAll(FetchFlatFileObjects.populateListOfAPIObjects()));
 
     }
 }

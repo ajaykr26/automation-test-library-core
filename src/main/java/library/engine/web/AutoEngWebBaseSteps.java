@@ -1,7 +1,5 @@
 package library.engine.web;
 
-import library.common.Constants;
-import library.common.JSONHelper;
 import library.common.TestContext;
 import library.engine.core.AutoEngCoreBaseStep;
 
@@ -9,7 +7,6 @@ import library.selenium.core.Element;
 import library.selenium.exec.BasePO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -20,16 +17,14 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.awt.*;
 import java.time.Duration;
 import java.util.*;
-import java.util.List;
 
 import static library.engine.core.AutoEngCoreParser.parseValue;
 import static library.reporting.ReportFactory.getReporter;
 
 public class AutoEngWebBaseSteps extends AutoEngCoreBaseStep {
-    protected Logger logger = LogManager.getLogger(AutoEngWebBaseSteps.class.getName());
+    protected final Logger logger = LogManager.getLogger(AutoEngWebBaseSteps.class.getName());
 
     private BasePO basePO;
 
@@ -324,7 +319,7 @@ public class AutoEngWebBaseSteps extends AutoEngCoreBaseStep {
     }
 
     public void wait(String time) throws NumberFormatException, InterruptedException {
-        Thread.sleep(Integer.parseInt(time) * 1000);
+        Thread.sleep(Integer.parseInt(time) * 1000L);
     }
 
     public Element getMatchingCellElement(String textToFind, Element element) {

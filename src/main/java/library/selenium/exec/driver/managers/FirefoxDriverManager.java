@@ -9,11 +9,8 @@ import library.selenium.exec.driver.factory.DriverManager;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.remote.CapabilityType;
 
 
 public class FirefoxDriverManager extends DriverManager {
@@ -27,7 +24,7 @@ public class FirefoxDriverManager extends DriverManager {
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         Capabilities caps = new Capabilities();
 
-        if (Property.getVariable("cukes.webdrivermanager").equalsIgnoreCase("true")) {
+        if (Property.getVariable("cukes.webdrivermanager") != null && Property.getVariable("cukes.webdrivermanager").equalsIgnoreCase("true")) {
             if (Property.getVariable("cukes.driverversion") != null) {
                 WebDriverManager.firefoxdriver().driverVersion(Property.getVariable("cukes.driverversion")).setup();
             } else {
@@ -37,7 +34,7 @@ public class FirefoxDriverManager extends DriverManager {
         } else {
             System.setProperty("webdriver.gecko.driver", getDriverPath("geckodriver"));
         }
-        if (propertiesConfiguration != null) {
+        if (propertiesConfiguration != null && propertiesConfiguration.containsKey("arguments.")) {
             String arguments = propertiesConfiguration.getString("arguments." + DriverContext.getInstance().getBrowserName().replaceAll("\\s", ""));
             firefoxOptions.addArguments(arguments);
         }

@@ -10,15 +10,14 @@ import com.aventstack.extentreports.reporter.configuration.Protocol;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import io.qameta.allure.Allure;
 import library.common.*;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -27,7 +26,7 @@ import static library.selenium.exec.BaseTest.reportPath;
 public class ExtentReporter implements ReportManager {
 
     private static ExtentReports extentReports;
-    private static Map<Integer, ExtentTest> extentTestMap = new HashMap<Integer, ExtentTest>();
+    private static final Map<Integer, ExtentTest> extentTestMap = new HashMap<>();
     private static final Logger logger = LogManager.getLogger(ExtentReporter.class);
 
     public void addStepLog(String message) {
@@ -98,7 +97,12 @@ public class ExtentReporter implements ReportManager {
     }
 
     public void addTextLogContent(String logTitle, String content) {
-            getTest().info(MarkupHelper.createJsonCodeBlock(content));
+        getTest().info(MarkupHelper.createJsonCodeBlock(content));
+    }
+
+
+    public void addAttachmentToReport(String filepath, String title) {
+
     }
 
     public synchronized static ExtentReports getExtentReports(String filePath) {
@@ -140,12 +144,12 @@ public class ExtentReporter implements ReportManager {
     }
 
     public static synchronized ExtentTest getTest() {
-        return extentTestMap.get((int) (long) (Thread.currentThread().getId()));
+        return extentTestMap.get((int) Thread.currentThread().getId());
     }
 
     public static synchronized ExtentTest getTest(String testName, String desc) {
         ExtentTest extentTest = extentReports.createTest(testName, desc);
-        return extentTestMap.get((int) (long) (Thread.currentThread().getId()));
+        return extentTestMap.get((int) Thread.currentThread().getId());
     }
 
     public static synchronized void startTest(String testName) {
@@ -154,15 +158,15 @@ public class ExtentReporter implements ReportManager {
 
     public static synchronized void startTest(String testName, String desc) {
         ExtentTest extentTest = extentReports.createTest(testName, desc);
-        extentTestMap.put((int) (long) (Thread.currentThread().getId()), extentTest);
+        extentTestMap.put((int) Thread.currentThread().getId(), extentTest);
     }
 
     public static synchronized void endTest() {
-        extentReports.removeTest(extentTestMap.get((int) (long) (Thread.currentThread().getId())));
+        extentReports.removeTest(extentTestMap.get((int) Thread.currentThread().getId()));
     }
 
     private static List<String> getAddress(String address) {
-        List<String> addressList = new ArrayList<String>();
+        List<String> addressList = new ArrayList<>();
 
         if (address.isEmpty())
             return addressList;

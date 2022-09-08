@@ -17,7 +17,7 @@ public class AppiumDriverManager extends DriverManager {
     private static final String PLATFORM_NAME = "platformName";
     private static final String APPIUM_END_POINT = "fw.appiumEndPoint";
 
-    protected Logger logger = LogManager.getLogger(this.getClass().getName());
+    protected final Logger logger = LogManager.getLogger(this.getClass().getName());
 
     @Override
     public void createDriver() {

@@ -4,7 +4,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import library.common.Constants;
 import library.common.ExcelHelper;
-import library.common.FileHelper;
 import library.common.TestContext;
 import library.engine.web.AutoEngWebBaseSteps;
 import library.selenium.core.Element;
@@ -16,7 +15,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -34,7 +32,7 @@ public class AutoEngWebUtils extends AutoEngWebBaseSteps {
 
 
     @Then("^the user writes the value of \"([^\"]*)\" from data dictionary to excel \"([^\"]*)\" file at the \"([^\"]*)\" worksheet$")
-    public void writeValueFromDataDictionaryToExcel(String dictionaryKey, String filepath, String worksheet) throws FileNotFoundException {
+    public void writeValueFromDataDictionaryToExcel(String dictionaryKey, String filepath, String worksheet) {
         filepath = parseValue(filepath);
         File fileToUpdate = new File(filepath);
         if (!fileToUpdate.isAbsolute()) {

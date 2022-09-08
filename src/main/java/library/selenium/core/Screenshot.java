@@ -1,8 +1,6 @@
 package library.selenium.core;
 
 import library.common.Constants;
-import library.common.Property;
-import library.common.TestContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

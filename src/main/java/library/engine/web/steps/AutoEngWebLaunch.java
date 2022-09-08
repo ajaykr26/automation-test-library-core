@@ -4,12 +4,7 @@ import io.cucumber.java.en.Given;
 import library.common.TestContext;
 import library.engine.web.AutoEngWebBaseSteps;
 import library.selenium.exec.driver.factory.DriverContext;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-
-import java.time.Duration;
-import java.util.Set;
 
 import static library.engine.core.AutoEngCoreConstants.SELENIUM;
 import static library.engine.core.AutoEngCoreParser.parseValue;
@@ -17,7 +12,7 @@ import static library.engine.core.AutoEngCoreParser.parseValue;
 public class AutoEngWebLaunch extends AutoEngWebBaseSteps {
 
     @Given("^the user launches the \"([^\"]*)\" application in a new (?:(window|tab))$")
-    public void launchApplication(String applicationName, String location) throws InterruptedException {
+    public void launchApplication(String applicationName, String location) {
         TestContext.getInstance().setActiveWindowType(SELENIUM);
         applicationName = parseValue(applicationName);
         if (location.equalsIgnoreCase("window")) {

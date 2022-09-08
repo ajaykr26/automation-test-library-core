@@ -4,7 +4,7 @@ import library.engine.core.validator.FailureFlag;
 import library.engine.core.validator.ValidatorManager;
 
 public class APIValidator extends ValidatorManager {
-    private FailureFlag failureFlag;
+    private final FailureFlag failureFlag;
 
     public APIValidator(String failureFlag) {
         this.failureFlag = FailureFlag.valueOfLabel(failureFlag);

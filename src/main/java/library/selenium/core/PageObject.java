@@ -21,10 +21,10 @@ import static library.engine.core.objectmatcher.ObjectFinder.getMatchingObject;
 
 public class PageObject extends CommonPageObject {
 
-    protected Logger logger = LogManager.getLogger(PageObject.class.getName());
-    protected WebDriver driver;
+    protected final Logger logger = LogManager.getLogger(PageObject.class.getName());
+    protected final WebDriver driver;
     protected By object;
-    protected WebDriverWait wait;
+    protected final WebDriverWait wait;
     protected SoftAssertions softAssertions = null;
 
     public PageObject(WebDriver driver) {
@@ -244,7 +244,7 @@ public class PageObject extends CommonPageObject {
     }
 
     public List<Element> setElements(List<WebElement> els) {
-        List<Element> list = new ArrayList<Element>();
+        List<Element> list = new ArrayList<>();
         for (WebElement el : els) {
             list.add(new Element(driver, el));
         }

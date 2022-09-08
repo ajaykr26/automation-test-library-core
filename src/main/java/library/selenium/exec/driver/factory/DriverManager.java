@@ -12,7 +12,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.Set;
 
 
@@ -60,7 +59,7 @@ public abstract class DriverManager {
     }
 
     public String getDriverPath(String driver) {
-        String extension = System.getProperty("os.name").split(" ")[0].toLowerCase().equalsIgnoreCase("windows") ? ".exe" : " ";
+        String extension = System.getProperty("os.name").split(" ")[0].equalsIgnoreCase("windows") ? ".exe" : " ";
         String driverPath = Property.getVariable("cukes.driverPath");
         return (driverPath == null ? Constants.DRIVER_PATH + System.getProperty("os.name").split(" ")[0].toLowerCase() + File.separator + driver + extension : driverPath);
     }

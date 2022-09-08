@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DateValidator extends ValidatorManager {
 
-    private FailureFlag failureFlag;
+    private final FailureFlag failureFlag;
 
     public DateValidator(String failureFlag) {
         this.failureFlag = FailureFlag.valueOfLabel(failureFlag);

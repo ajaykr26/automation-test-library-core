@@ -12,11 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.CapabilityType;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class ChromeDriverManager extends DriverManager {
@@ -29,7 +24,7 @@ public class ChromeDriverManager extends DriverManager {
         ChromeOptions chromeOptions = new ChromeOptions();
         Capabilities caps = new Capabilities();
 
-        if (Property.getVariable("cukes.webdrivermanager").equalsIgnoreCase("true")) {
+        if (Property.getVariable("cukes.webdrivermanager") != null && Property.getVariable("cukes.webdrivermanager").equalsIgnoreCase("true")) {
             if (Property.getVariable("cukes.driverversion") != null) {
                 WebDriverManager.chromedriver().driverVersion(Property.getVariable("cukes.driverversion")).setup();
             } else {
@@ -39,7 +34,7 @@ public class ChromeDriverManager extends DriverManager {
         } else {
             System.setProperty("webdriver.chrome.driver", getDriverPath("chromedriver"));
         }
-        if (propertiesConfiguration != null) {
+        if (propertiesConfiguration != null && propertiesConfiguration.containsKey("arguments.")) {
             String arguments = propertiesConfiguration.getString("arguments." + DriverContext.getInstance().getBrowserName().replaceAll("\\s", ""));
             chromeOptions.addArguments(arguments);
         }

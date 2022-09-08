@@ -5,12 +5,6 @@ import io.cucumber.java.en.Given;
 import library.common.TestContext;
 import library.engine.api.AutoEngAPIBaseSteps;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.util.HashMap;
-import java.util.Map;
-
 import static library.api.utils.XmlHelper.getValueFromXmlDocumentByXpath;
 
 

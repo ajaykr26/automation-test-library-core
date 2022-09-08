@@ -2,15 +2,11 @@ package library.engine.web.steps;
 
 import io.cucumber.java.en.Then;
 import library.common.TestContext;
-import library.engine.core.validator.AssertHelper;
-import library.engine.core.validator.ComparisonOperator;
-import library.engine.core.validator.ComparisonType;
 import library.engine.web.AutoEngWebBaseSteps;
 import library.selenium.core.Element;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import javax.enterprise.inject.New;
 import java.util.ArrayList;
 import java.util.List;
 

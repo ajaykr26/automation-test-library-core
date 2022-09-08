@@ -1,7 +1,6 @@
 package library.common;
 
 import com.google.gson.*;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -67,7 +66,7 @@ public class JSONHelper {
         }
     }
 
-    public static <T> T getDataPOJO(String filepath, Class<T> clazz) throws IOException {
+    public static <T> T getDataPOJO(String filepath, Class<T> clazz) {
         Gson gson = new Gson();
         File file = new File(filepath);
         T dataobject = null;
@@ -94,6 +93,24 @@ public class JSONHelper {
         }
     }
 
+    public static Map<String, Object> getJSONToMap(String filename, String... key) {
+        Map<String, Object> map = new HashMap<>();
+
+        try {
+            FileReader reader = new FileReader(filename);
+            JSONTokener token = new JSONTokener(reader);
+            JSONObject jsonObject =  (JSONObject) (key.length > 0 ? new JSONObject(token).get(key[0]) : new JSONObject(token));
+
+            String[] keys = JSONObject.getNames(jsonObject);
+            for (String k : keys) {
+                map.put(k, jsonObject.get(k).toString());
+            }
+            return map;
+        } catch (NullPointerException | FileNotFoundException exception) {
+            logger.debug("empty data found in json file");
+            return map;
+        }
+    }
     public static List<Map<String, String>> getJSONAsListOfMaps(String path) {
         Gson gson = new GsonBuilder().create();
         try {

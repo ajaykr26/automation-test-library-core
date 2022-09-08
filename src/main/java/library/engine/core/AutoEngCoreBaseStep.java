@@ -20,11 +20,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
-import static library.engine.core.AutoEngCoreConstants.VALIDATION_TAG;
 import static library.engine.core.objectmatcher.ObjectFinder.*;
 import static library.reporting.ReportFactory.getReporter;
 
@@ -51,14 +48,14 @@ public class AutoEngCoreBaseStep implements En {
     private BasePO baseWebPO;
     protected static Element element = null;
     protected static By object = null;
-    protected static List<Element> elements = new ArrayList<Element>();
+    protected static List<Element> elements = new ArrayList<>();
 
 
     public AutoEngCoreBaseStep() {
     }
 
     public enum ScreenshotType {
-        DISPLAY, AREA, SCROLLING;
+        DISPLAY, AREA, SCROLLING
     }
 
     public WebDriver getDriver() {

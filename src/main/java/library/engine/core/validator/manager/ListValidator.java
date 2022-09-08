@@ -33,9 +33,9 @@ public class ListValidator extends ValidatorManager {
     @Override
     protected void assertNotEqualsTo(Object actual, Object expected, String assertMsg) {
         if (failureFlag == FailureFlag.HARD_STOP_ON_FAILURE) {
-            assertThat((List) actual).as(assertMsg).isNotSameAs((List) expected);
+            assertThat((List) actual).as(assertMsg).isNotSameAs(expected);
         } else {
-            TestContext.getInstance().softAssertions().assertThat((List) actual).as(assertMsg).isNotSameAs((List) expected);
+            TestContext.getInstance().softAssertions().assertThat((List) actual).as(assertMsg).isNotSameAs(expected);
         }
     }
 

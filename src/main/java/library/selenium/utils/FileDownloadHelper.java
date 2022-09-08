@@ -23,10 +23,8 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 public class FileDownloadHelper {
-    private WebDriver driver;
+    private final WebDriver driver;
     private URI fileURI;
-    private boolean mimicWebDriverCookieState = true;
-    private boolean followRedirects = true;
     protected final Logger logger = LogManager.getLogger(FileDownloadHelper.class);
 
     public FileDownloadHelper(WebDriver driver) {
@@ -53,7 +51,7 @@ public class FileDownloadHelper {
             FileUtils.copyInputStreamToFile(response.body().byteStream(), downloadedFile);
             return downloadedFile;
         } catch (IOException | NullPointerException exception) {
-            logger.error("", exception.getMessage());
+            logger.error(exception.getMessage());
             return null;
         }
 
@@ -74,12 +72,14 @@ public class FileDownloadHelper {
 
     private OkHttpClient getOkHttpClient() {
         CookieJar cookieJar = null;
+        boolean mimicWebDriverCookieState = true;
         if (mimicWebDriverCookieState) {
             cookieJar = new FileDownloadCookieJar(driver.manage().getCookies());
 
         } else {
             cookieJar = new FileDownloadCookieJar();
         }
+        boolean followRedirects = true;
         return new OkHttpClient.Builder().cookieJar(cookieJar)
                 .hostnameVerifier(fileDownloadVerifier())
                 .followRedirects(followRedirects)

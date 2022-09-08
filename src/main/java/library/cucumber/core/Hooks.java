@@ -3,13 +3,11 @@ package library.cucumber.core;
 import io.cucumber.core.api.Scenario;
 import io.cucumber.java8.En;
 import library.common.*;
-import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import static library.reporting.ReportFactory.getReporter;
@@ -17,7 +15,7 @@ import static library.reporting.ReportFactory.getReporter;
 
 public class Hooks implements En {
 
-    protected static Logger logger = LogManager.getLogger(Hooks.class.getName());
+    protected static final Logger logger = LogManager.getLogger(Hooks.class.getName());
 
     public Hooks() {
         Before(10, (Scenario scenario) -> {

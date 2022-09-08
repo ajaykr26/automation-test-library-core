@@ -1,19 +1,11 @@
 package library.engine.web.steps;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import library.common.TestContext;
 import library.engine.web.AutoEngWebBaseSteps;
-import library.selenium.core.Element;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-
-import java.util.List;
 
 import static library.engine.core.AutoEngCoreParser.*;
-import static library.engine.core.objectmatcher.ObjectFinder.getMatchingElement;
-import static library.reporting.ReportFactory.getReporter;
 
 public class AutoEngWebSetSelect extends AutoEngWebBaseSteps {
 

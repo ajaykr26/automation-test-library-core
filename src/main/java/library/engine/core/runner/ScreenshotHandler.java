@@ -7,7 +7,6 @@ import library.selenium.exec.driver.factory.DriverContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.NoSuchWindowException;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import java.io.File;
 

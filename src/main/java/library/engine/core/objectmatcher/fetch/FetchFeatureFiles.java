@@ -1,7 +1,6 @@
 package library.engine.core.objectmatcher.fetch;
 
 import library.common.Constants;
-import library.engine.core.AutoEngCoreConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

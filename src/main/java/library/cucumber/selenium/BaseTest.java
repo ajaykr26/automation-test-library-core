@@ -5,14 +5,11 @@ import io.cucumber.testng.CucumberOptions;
 import io.cucumber.testng.PickleEventWrapper;
 import io.cucumber.testng.TestNGCucumberRunner;
 import library.common.Constants;
-import library.common.Formatter;
 import library.common.JSONHelper;
 import library.common.Property;
-import library.common.TestContext;
 import org.apache.commons.compress.utils.Lists;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import java.util.*;
@@ -33,7 +30,7 @@ public class BaseTest extends library.selenium.exec.BaseTest {
     }
 
 
-    @DataProvider(name = "techStackJSON", parallel = true)
+    @DataProvider(name = "techStackJSON", parallel = false)
     private Object[][] techStackJSON() {
         List<Map<String, String>> listOfTechStack = JSONHelper.getJSONAsListOfMaps(Constants.TECHSTACKS);
         if (!listOfTechStack.isEmpty()) {
@@ -53,7 +50,7 @@ public class BaseTest extends library.selenium.exec.BaseTest {
         }
     }
 
-    @DataProvider(name = "techStackWithScenarioList", parallel = true)
+    @DataProvider(name = "techStackWithScenarioList", parallel = false)
     public Object[][] combineDataProvider() {
         List<Object[]> techStackList = Lists.newArrayList();
         List<Object[]> scenarioList = Lists.newArrayList();

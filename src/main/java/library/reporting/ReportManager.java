@@ -1,7 +1,5 @@
 package library.reporting;
 
-import org.testng.ITestListener;
-
 import java.util.Map;
 
 public interface ReportManager {
@@ -22,4 +20,6 @@ public interface ReportManager {
 
     void addTextLogContent(String logTitle, String content);
 
-    }
+    void addAttachmentToReport(String filepath, String title);
+
+}

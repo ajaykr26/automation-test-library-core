@@ -7,31 +7,21 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
-import io.cucumber.java.sl.In;
 import library.common.Constants;
 import library.common.JSONHelper;
-import library.common.Property;
 import library.common.TestContext;
-import library.selenium.exec.driver.factory.DriverContext;
-import org.apache.kafka.common.protocol.types.Field;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.*;
 
-import java.security.Key;
 import java.time.Duration;
 import java.util.*;
-
-import static library.engine.core.objectmatcher.ObjectFinder.getMatchingElement;
-import static library.engine.core.objectmatcher.ObjectFinder.getMatchingObject;
-import static library.reporting.ReportFactory.getReporter;
 
 
 public class Element {
@@ -112,12 +102,12 @@ public class Element {
 
     public Element $(String locatorType, String locatorText) {
         By by = getObjectLocatedBy(locatorType, locatorText);
-        return new Element(driver, (WebElement) wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.element, by)), by);
+        return new Element(driver, wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.element, by)), by);
     }
 
     public List<Element> $$(String locatorType, String locatorText) {
-        List<WebElement> els = (List<WebElement>) wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(this.element, getObjectLocatedBy(locatorType, locatorText)));
-        List<Element> list = new ArrayList<Element>();
+        List<WebElement> els = wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(this.element, getObjectLocatedBy(locatorType, locatorText)));
+        List<Element> list = new ArrayList<>();
         for (WebElement el : els) {
             list.add(new Element(driver, el));
         }
@@ -126,12 +116,12 @@ public class Element {
 
     public Element findElement(String locatorType, String locatorText) {
         By by = getObjectLocatedBy(locatorType, locatorText);
-        return new Element(driver, (WebElement) wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.element, by)), by);
+        return new Element(driver, wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.element, by)), by);
     }
 
     public List<Element> findElements(String locatorType, String locatorText) {
-        List<WebElement> els = (List<WebElement>) wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(this.element, getObjectLocatedBy(locatorType, locatorText)));
-        List<Element> list = new ArrayList<Element>();
+        List<WebElement> els = wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(this.element, getObjectLocatedBy(locatorType, locatorText)));
+        List<Element> list = new ArrayList<>();
         for (WebElement el : els) {
             list.add(new Element(driver, el));
         }
@@ -139,12 +129,12 @@ public class Element {
     }
 
     public Element $(By by) {
-        return new Element(driver, (WebElement) getWait().until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.element, by)), by);
+        return new Element(driver, getWait().until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.element, by)), by);
     }
 
     public List<Element> $$(By by) {
-        List<WebElement> els = (List<WebElement>) wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(this.element, by));
-        List<Element> list = new ArrayList<Element>();
+        List<WebElement> els = wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(this.element, by));
+        List<Element> list = new ArrayList<>();
         for (WebElement el : els) {
             list.add(new Element(driver, el));
         }
@@ -152,12 +142,12 @@ public class Element {
     }
 
     public Element findElement(By by) {
-        return new Element(driver, (WebElement) wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.element, by)), by);
+        return new Element(driver, wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.element, by)), by);
     }
 
     public List<Element> findElements(By by) {
-        List<WebElement> els = (List<WebElement>) wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(this.element, by));
-        List<Element> list = new ArrayList<Element>();
+        List<WebElement> els = wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(this.element, by));
+        List<Element> list = new ArrayList<>();
         for (WebElement el : els) {
             list.add(new Element(driver, el));
         }
@@ -444,7 +434,7 @@ public class Element {
     }
 
     public List<String> getAllText(List<Element> els) {
-        List<String> elementsText = new ArrayList<String>();
+        List<String> elementsText = new ArrayList<>();
         for (Element el : els) {
             elementsText.add(el.element().getText());
         }
@@ -644,7 +634,7 @@ public class Element {
     }
 
     public List<String> getDropdownOptionsTextOfNonSelectTag() {
-        List<String> optionsText = new ArrayList<String>();
+        List<String> optionsText = new ArrayList<>();
         List<String> tagNames = Arrays.asList("div", "a");
         for (String tagName : tagNames) {
             List<WebElement> options = this.element.findElements(By.tagName(tagName));
@@ -657,7 +647,7 @@ public class Element {
     }
 
     public List<String> getDropdownOptionsTextOfSelectTag() {
-        List<String> optionsText = new ArrayList<String>();
+        List<String> optionsText = new ArrayList<>();
         List<WebElement> options = this.dropdown().getOptions();
         for (WebElement option : options) {
             optionsText.add(option.getText());
@@ -674,7 +664,7 @@ public class Element {
     }
 
     public List<String> getListOfDropdownOptionsValuesOfSelectTag() {
-        List<String> optionsText = new ArrayList<String>();
+        List<String> optionsText = new ArrayList<>();
         List<WebElement> options = this.dropdown().getOptions();
         for (WebElement option : options) {
             optionsText.add(option.getAttribute("value"));
@@ -683,7 +673,7 @@ public class Element {
     }
 
     public List<String> getListOfDropdownOptionsValuesOfNonSelectTag() {
-        List<String> optionsText = new ArrayList<String>();
+        List<String> optionsText = new ArrayList<>();
         List<String> tagNames = Arrays.asList("div", "a");
         for (String tagName : tagNames) {
             List<WebElement> options = this.element.findElements(By.tagName(tagName));
@@ -696,7 +686,7 @@ public class Element {
     }
 
     public List<String> getDropdownOptGroupsText() {
-        List<String> optGroupsText = new ArrayList<String>();
+        List<String> optGroupsText = new ArrayList<>();
         List<WebElement> optGroups = this.element().findElements(By.tagName("optgroup"));
         for (WebElement optGroup : optGroups) {
             optGroupsText.add(optGroup.getText());
@@ -709,7 +699,7 @@ public class Element {
     }
 
     public List<String> getDropdownOptionsTextWithinGroup(String group) {
-        List<String> optionsText = new ArrayList<String>();
+        List<String> optionsText = new ArrayList<>();
         List<WebElement> options = this.element().findElements(By.xpath("//optgroup[@label=" + group + "]/option"));
         for (WebElement option : options) {
             optionsText.add(option.getText());
@@ -914,13 +904,13 @@ public class Element {
     }
 
     public ArrayList<ArrayList<String>> getTableDataAsArray() {
-        ArrayList<ArrayList<String>> tableData = new ArrayList<ArrayList<String>>();
+        ArrayList<ArrayList<String>> tableData = new ArrayList<>();
         List<WebElement> rows = this.element().findElements(By.tagName("tr"));
         int rowNum = rows.size();
         for (WebElement row : rows) {
             List<WebElement> cols = row.findElements(By.tagName("td"));
             if (cols.size() > 0) {
-                ArrayList<String> rowData = new ArrayList<String>();
+                ArrayList<String> rowData = new ArrayList<>();
                 for (WebElement col : cols) {
                     rowData.add(col.getText().trim());
                 }

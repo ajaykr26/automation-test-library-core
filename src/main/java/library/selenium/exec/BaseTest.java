@@ -1,10 +1,7 @@
 package library.selenium.exec;
 
 import io.appium.java_client.service.local.AppiumDriverLocalService;
-import library.common.Constants;
-import library.common.Formatter;
 import library.common.Property;
-import library.common.TestContext;
 import library.selenium.exec.driver.factory.DriverContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +12,6 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import static library.reporting.ExtentReporter.getExtentReports;
-import static library.reporting.ReportFactory.getReporter;
 
 
 public class BaseTest {
@@ -23,7 +19,7 @@ public class BaseTest {
 
     private static final String PROJECT_NAME = "PROJECT_NAME";
     private static final String BUILD_NUMBER = "BUILD_NUMBER";
-    protected Logger logger = LogManager.getLogger(this.getClass().getName());
+    protected final Logger logger = LogManager.getLogger(this.getClass().getName());
     private static AppiumDriverLocalService service;
     public static String reportPath;
 

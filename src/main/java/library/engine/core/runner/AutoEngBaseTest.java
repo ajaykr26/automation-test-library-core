@@ -2,7 +2,6 @@ package library.engine.core.runner;
 
 import io.cucumber.testng.CucumberOptions;
 import library.cucumber.selenium.BaseTest;
-import org.testng.annotations.AfterTest;
 
 @CucumberOptions(
         plugin = {"library.engine.core.runner.AutoEngFormatter",

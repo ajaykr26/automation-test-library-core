@@ -1,9 +1,5 @@
 package library.engine.core;
 
-import library.common.Property;
-
-import java.io.File;
-
 public class AutoEngCoreConstants {
 
     public static final String LEANFT = "LeanFT";

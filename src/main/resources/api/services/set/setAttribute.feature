@@ -1,6 +1,4 @@
-@ignore
 Feature: Set attribute value in a response
-
 
   @setAttribute
   Scenario: 

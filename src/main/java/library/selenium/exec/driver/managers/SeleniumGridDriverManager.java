@@ -1,6 +1,5 @@
 package library.selenium.exec.driver.managers;
 
-import library.common.Property;
 import library.selenium.exec.driver.factory.Capabilities;
 import library.selenium.exec.driver.factory.DriverManager;
 import org.apache.logging.log4j.LogManager;
@@ -13,7 +12,7 @@ import java.net.URL;
 public class SeleniumGridDriverManager extends DriverManager {
     private static final String PLATFORM_NAME = "platformName";
     private static final String CUKES_SELENIUM_GRID = "fw.seleniumGrid";
-    protected Logger logger = LogManager.getLogger(this.getClass().getName());
+    protected final Logger logger = LogManager.getLogger(this.getClass().getName());
 
     @Override
     public void createDriver() {

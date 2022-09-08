@@ -7,6 +7,7 @@ public class Constants {
     public static final String USER_DIR = System.getProperty("user.dir");
     public static final String BASE_PATH = USER_DIR + "/src/test/resources/";
     public static final String TESTDATA_PATH = BASE_PATH + "testdata/";
+    public static final String LOG_PATH = USER_DIR + "/logs/";
     public static final String PROPERTIES_PATH = BASE_PATH + "config/properties/";
     public static final String WEB_KEYS_PATH = BASE_PATH + "config/keymaps/webkeys.json";
     public static final String TECHSTACK_PATH = BASE_PATH + "config/techstacks/";
@@ -19,7 +20,6 @@ public class Constants {
     public static final String EXTENT_REPORT_PATH = USER_DIR + "/target/extent-reports/";
     public static final String ACTUAL_IMAGE_PATH = USER_DIR + "/target/actual-image/";
     public static final String FEATURE_PATH = BASE_PATH + "features/";
-    ;
     public static final String CLASSPATH = USER_DIR + "/target/test-classes/";
     public static final String SELENIUM_PATH = BASE_PATH + "config/selenium/";
     public static final String API_OBJECT_FOLDER = "apiobjects";

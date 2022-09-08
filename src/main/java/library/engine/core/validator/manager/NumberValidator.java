@@ -7,7 +7,7 @@ import library.engine.core.validator.ValidatorManager;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NumberValidator extends ValidatorManager {
-    private FailureFlag failureFlag;
+    private final FailureFlag failureFlag;
 
     public NumberValidator(String failureFlag) {
         this.failureFlag = FailureFlag.valueOfLabel(failureFlag);

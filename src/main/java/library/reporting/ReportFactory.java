@@ -1,9 +1,5 @@
 package library.reporting;
 
-import library.common.Constants;
-import library.common.Property;
-import library.common.TestContext;
-
 public class ReportFactory {
     public static ReportManager getReporter() {
         String report = System.getProperty("fw.report");

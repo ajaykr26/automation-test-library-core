@@ -3,28 +3,22 @@ package library.engine.api;
 import com.intuit.karate.KarateException;
 import com.intuit.karate.Runner;
 import com.intuit.karate.core.KarateParser;
+import com.intuit.karate.template.KarateEngineContext;
+import com.intuit.karate.template.KarateTemplateEngine;
 import library.api.utils.Constants;
 import library.api.utils.JSONFormatter;
 import library.common.FileHelper;
+import library.common.JSONHelper;
 import library.common.TestContext;
+import library.engine.api.steps.AutoEngAPICall;
 import library.engine.core.AutoEngCoreBaseStep;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.testng.reporters.Files;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.Node;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import javax.enterprise.inject.New;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,6 +29,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static library.engine.core.AutoEngCoreConstants.API;
+import static library.engine.core.AutoEngCoreParser.parseValue;
 import static library.engine.core.AutoEngCoreParser.replaceParameterValues;
 import static library.engine.core.objectmatcher.ObjectFinder.getMatchingAPIFeature;
 import static library.reporting.ReportFactory.getReporter;
@@ -44,12 +39,14 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     private static final String STATUS_FAIL = "FAIL";
     protected static final String ROOT_ATTRIBUTE = "root";
     protected static final String VALIDATION_TAG = "VALIDATION.";
-    protected static final String RESPONSE_KEY = "fw.lastAPIResponse";
-    protected static final String RESPONSE = "response";
-    protected static final String RESPONSE_STATUS_KEY = "fw.responseStatus";
-    protected static final String COMPARISON_op = "comparisonOperator";
+    protected static final String COMPARISON_OPERATOR = "comparisonOperator";
     protected static final String RESPONSE_STATUS = "responseStatus";
+    protected static final String RESPONSE_STATUS_KEY = "fw.responseStatus";
     protected static final String PARENT_ATTRIBUTE_NAME = "parentAttributeName";
+    protected static final String RESPONSE_HEADER = "responseHeaders";
+    protected static final String RESPONSE_HEADER_KEY = "fw.responseHeaders";
+    protected static final String RESPONSE = "response";
+    protected static final String RESPONSE_KEY = "fw.lastAPIResponse";
     protected static final String ATTRIBUTE_NAME = "attributeName";
     protected static final String ATTRIBUTE_VALUE = "attributeValue";
     protected static final String CLASSPATH_API_FEATURE_FILES = "classpath:%s%s";
@@ -61,12 +58,11 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     protected static final String WITH_PARENT = "withParent";
     protected static final String PARENT_FEATURE_PATTERN = "%s%s.feature";
     protected static final String FEATURE_PATTERN = "%s.feature";
-    protected static final String RESPONSE_HEADER_KEY = "fw.responseHeaders";
-    protected static final String RESPONSE_HEADER = "responseHeaders";
     protected static final String TOPIC_KEY = "fw.activeKafkaTopic";
 
+
     protected enum StoreType {
-        SINGLE, ATINDEX, ATLAST, LASTCOUNT, FILTERBY, FILTERBYTWO, FULLARRAY;
+        SINGLE, ATINDEX, ATLAST, LASTCOUNT, FILTERBY, FILTERBYTWO, FULLARRAY
     }
 
     protected String getSetFeature(String parentAttributeName, StoreType storeType) {
@@ -115,6 +111,7 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     }
 
     public Map runAPIFeatureFile(String path, Map<String, Object> args) {
+
         return Runner.runFeature(path, args, true);
     }
 
@@ -144,6 +141,15 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         }
     }
 
+    protected Map<String, Object> getAPICallArgs(String argString) {
+        String[] listOfArgsMap = argString.split(":");
+        Map<String, Object> args = new HashMap<>();
+        for (String arg : listOfArgsMap) {
+            args.put(arg.split("\\|")[0], arg.split("\\|")[1]);
+        }
+        return args;
+    }
+
     protected void callAPIWithoutTag(String featureName, Map<String, Object> args) {
         callAPI(String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, getPathToFeature(featureName)), args);
     }
@@ -158,7 +164,15 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     }
 
     private String getPathToXML(String featureName) {
-        return FileHelper.findFileInPath(Constants.API_OBJECT_PATH, featureName + ".xml");
+        return FileHelper.findFileInPath(Constants.SERVICES_PATH, featureName + ".xml");
+    }
+
+    private String getPathToJson(String featureName) {
+        return FileHelper.findFileInPath(Constants.SERVICES_PATH, featureName + ".json");
+    }
+
+    private String getPathToSourceFile(String filetype, String sourceFilename) {
+        return filetype.equalsIgnoreCase("json") ? FileHelper.findFileInPath(Constants.SERVICES_PATH, sourceFilename + ".json") : FileHelper.findFileInPath(Constants.SERVICES_PATH, sourceFilename + ".xml");
     }
 
     private void callAPI(String pathToFeature, Map<String, Object> args) {
@@ -188,12 +202,12 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     private void logRequestResponseData(Map<String, Object> result) {
         Map<String, Object> reportInfo = getReportInfo(result);
         logAndReportText("API request URI: ", reportInfo.get(REQUEST_URI));
-        logAndReportDataTable("API request Headers: ", reportInfo.get(REQUEST_HEADERS));
+        logAndReportDataTable(reportInfo.get(REQUEST_HEADERS));
         logAndReportJSON("API request body: ", reportInfo.get(REQUEST_BODY));
         logAndReportText("API response code: %s", reportInfo.get(RESPONSE_STATUS));
         if (result.get(RESPONSE_XML) != null) {
             logAndReportText("API response XML: %s", reportInfo.get(RESPONSE_XML));
-        }else {
+        } else {
             logAndReportJSON("API response JSON: ", reportInfo.get(RESPONSE));
 
         }
@@ -203,7 +217,7 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     private void loadRequestResponseData(Map<String, Object> result) {
         Map<String, Object> reportInfo = getReportInfo(result);
         logAndReportText("API request URI: ", reportInfo.get(REQUEST_URI));
-        logAndReportDataTable("API request Headers: ", reportInfo.get(REQUEST_HEADERS));
+        logAndReportDataTable(reportInfo.get(REQUEST_HEADERS));
         logAndReportJSON("API request body: ", reportInfo.get(REQUEST_BODY));
         logAndReportText("API response code: %s", reportInfo.get(RESPONSE_STATUS));
         logAndReportJSON("API response JSON: ", reportInfo.get(RESPONSE));
@@ -237,10 +251,10 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         }
     }
 
-    private void logAndReportDataTable(String tableTitle, Object attributeToLog) {
+    private void logAndReportDataTable(Object attributeToLog) {
         if (attributeToLog != null) {
             logger.debug(attributeToLog);
-            getReporter().addDataTable(tableTitle, (Map) attributeToLog);
+            getReporter().addDataTable("API request Headers: ", (Map) attributeToLog);
         }
     }
 
@@ -316,6 +330,63 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
             }
             final String newFileName = Paths.get(String.format("%s/%s.xml", Paths.get(pathToXmlTemplate).getParent().toString(), xmlTarget)).toAbsolutePath().toString();
             Files.writeFile(templateXMLAsString, new File(newFileName));
+        }
+    }
+
+    protected void replaceParamsInJsonFile(String xmlTemplateFile, String xmlTarget) throws IOException {
+        final String pathToXmlTemplate = getPathToJson(xmlTemplateFile);
+        String templateXMLAsString = FileHelper.getFileAsString(pathToXmlTemplate, "\n");
+
+        if (templateXMLAsString != null) {
+            templateXMLAsString = replaceParameterValues(templateXMLAsString);
+            PropertiesConfiguration prop = new PropertiesConfiguration();
+            boolean val = Boolean.parseBoolean(prop.getString("ignoreTagsXML"));
+            String fetchedVal = prop.getString("ignoreTagInformation");
+            if (val) {
+                List<String> list = prop.getList("ignoreTagInformation").stream().map(token -> (String) token).collect(Collectors.toList());
+                for (String token : list) {
+                    if (fetchedVal != null && !fetchedVal.isEmpty()) {
+                        Pattern pattern = Pattern.compile("<" + token + ">" + "(\\S+)" + "</" + token + ">");
+                        Matcher matcher = pattern.matcher(templateXMLAsString);
+                        if (!matcher.find()) {
+                            TestContext.getInstance().testdataPut(xmlTarget, templateXMLAsString);
+                        }
+                    }
+                }
+            } else {
+                TestContext.getInstance().testdataPut(xmlTarget, templateXMLAsString);
+            }
+            final String newFileName = Paths.get(String.format("%s/%s.json", Paths.get(pathToXmlTemplate).getParent().toString(), xmlTarget)).toAbsolutePath().toString();
+            Files.writeFile(templateXMLAsString, new File(newFileName));
+        }
+    }
+
+    protected void replaceParamsInRequest(String filetype, String sourceFileName, String targetFileName) throws IOException {
+        final String pathToXmlTemplate = getPathToSourceFile(filetype, sourceFileName);
+        String requestString = FileHelper.getFileAsString(pathToXmlTemplate, "\n");
+
+        if (requestString != null) {
+            requestString = replaceParameterValues(requestString);
+            PropertiesConfiguration prop = new PropertiesConfiguration();
+            boolean val = filetype.equalsIgnoreCase("json") ? Boolean.parseBoolean(prop.getString("ignoreTagsJSON")) : Boolean.parseBoolean(prop.getString("ignoreTagsXML"));
+            String fetchedVal = prop.getString("ignoreTagInformation");
+            if (val) {
+                List<String> list = prop.getList("ignoreTagInformation").stream().map(token -> (String) token).collect(Collectors.toList());
+                for (String token : list) {
+                    if (fetchedVal != null && !fetchedVal.isEmpty()) {
+                        Pattern pattern = Pattern.compile("<" + token + ">" + "(\\S+)" + "</" + token + ">");
+                        Matcher matcher = pattern.matcher(requestString);
+                        if (!matcher.find()) {
+                            TestContext.getInstance().testdataPut(targetFileName, requestString);
+                        }
+                    }
+                }
+            } else {
+                TestContext.getInstance().testdataPut(targetFileName, requestString);
+            }
+            String NewRequestFile = filetype.equalsIgnoreCase("json") ? "%s/%s.json" : "%s/%s.xml";
+            final String newFileName = Paths.get(String.format(NewRequestFile, Paths.get(pathToXmlTemplate).getParent().toString(), targetFileName)).toAbsolutePath().toString();
+            Files.writeFile(requestString, new File(newFileName));
         }
     }
 

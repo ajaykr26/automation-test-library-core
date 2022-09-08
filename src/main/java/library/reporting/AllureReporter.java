@@ -8,12 +8,11 @@ import io.qameta.allure.model.StatusDetails;
 import io.qameta.allure.model.StepResult;
 import io.qameta.allure.util.ResultsUtils;
 import library.common.*;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.xmlbeans.impl.xb.xsdschema.All;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +32,7 @@ import static library.reporting.ReportFactory.getReporter;
 
 public class AllureReporter implements ReportManager {
 
-    protected static Logger logger = LogManager.getLogger(AllureReporter.class);
+    protected static final Logger logger = LogManager.getLogger(AllureReporter.class);
 
     public AllureReporter() {
     }
@@ -110,7 +109,7 @@ public class AllureReporter implements ReportManager {
     }
 
     public void addTextLogContent(String logTitle, String content) {
-            Allure.attachment(logTitle, content);
+        Allure.attachment(logTitle, content);
     }
 
     public static void addScreenCaptureFromPath(String imagePath, String title) {
@@ -119,6 +118,15 @@ public class AllureReporter implements ReportManager {
             Allure.addAttachment(title, inputStream);
         } catch (IOException exception) {
             logger.error("Screenshot failed: {}", exception.getMessage());
+        }
+    }
+
+    public void addAttachmentToReport(String filepath, String title) {
+        Path content = Paths.get(filepath);
+        try (InputStream inputStream = Files.newInputStream(content)) {
+            Allure.addAttachment(title, inputStream);
+        } catch (IOException exception) {
+            logger.error(exception.getMessage());
         }
     }
 

@@ -6,7 +6,6 @@ import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSElement;
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
-import library.common.Property;
 import library.selenium.exec.driver.factory.Capabilities;
 import library.selenium.exec.driver.factory.DriverManager;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +17,7 @@ import java.net.URL;
 
 public class BrowserStackDriverManager extends DriverManager {
     private static final String PLATFORM_NAME = "platformName";
-    protected Logger logger = LogManager.getLogger(this.getClass().getName());
+    protected final Logger logger = LogManager.getLogger(this.getClass().getName());
 
     @Override
     public void createDriver() {

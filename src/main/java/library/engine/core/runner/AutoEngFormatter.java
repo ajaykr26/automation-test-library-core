@@ -6,9 +6,7 @@ import cucumber.api.event.*;
 import cucumber.runtime.formatter.TestSourcesModelProxy;
 import library.common.*;
 import library.reporting.ExtentReporter;
-import library.selenium.exec.driver.factory.DriverContext;
 import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.logging.log4j.ThreadContext;
 
 import java.util.Collections;
 import java.util.HashMap;

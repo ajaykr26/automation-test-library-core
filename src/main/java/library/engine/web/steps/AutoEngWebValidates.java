@@ -7,7 +7,6 @@ import library.engine.core.validator.ComparisonOperator;
 import library.engine.core.validator.ComparisonType;
 import library.engine.web.AutoEngWebBaseSteps;
 import library.selenium.core.Element;
-import org.testng.Assert;
 
 import java.io.File;
 import java.io.IOException;

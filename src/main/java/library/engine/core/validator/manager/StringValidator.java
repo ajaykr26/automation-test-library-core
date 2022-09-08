@@ -7,7 +7,7 @@ import library.engine.core.validator.ValidatorManager;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StringValidator extends ValidatorManager {
-    private FailureFlag failureFlag;
+    private final FailureFlag failureFlag;
 
     public StringValidator(String failureFlag) {
         this.failureFlag = FailureFlag.valueOfLabel(failureFlag);

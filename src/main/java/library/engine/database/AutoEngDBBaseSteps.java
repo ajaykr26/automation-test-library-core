@@ -57,14 +57,9 @@ public class AutoEngDBBaseSteps extends AutoEngCoreBaseStep {
     }
 
     protected void callDBQuery(String queryName) throws IOException {
-        try {
-            List<Map<String, Object>> result = runDBQueryFile(getPathToQueryFile(queryName));
-            TestContext.getInstance().testdataPut(QUERY_RESULT, result);
-            logQueryResult(result, queryName);
-        } catch (IOException exception) {
-            getReporter().addStepLog(STATUS_FAIL, "Step failed: " + queryName + " execution is failed. see error message" + exception.getMessage());
-            throw exception;
-        }
+        List<Map<String, Object>> result = runDBQueryFile(getPathToQueryFile(queryName));
+        TestContext.getInstance().testdataPut(QUERY_RESULT, result);
+        logQueryResult(result, queryName);
     }
 
     private void logQueryResult(List<Map<String, Object>> queryResult, String queryName) {
@@ -78,10 +73,9 @@ public class AutoEngDBBaseSteps extends AutoEngCoreBaseStep {
     }
 
     private Map<String, Object> prepResultSetForReport(Map<String, Object> resultSet) {
-        return resultSet.entrySet().stream().map(entry -> {
+        return resultSet.entrySet().stream().peek(entry -> {
             if (entry.getValue() == null)
                 entry.setValue("null");
-            return entry;
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -104,7 +98,7 @@ public class AutoEngDBBaseSteps extends AutoEngCoreBaseStep {
         return String.format(QUERY_RESULT_LOG_FORMAT, QUERY_RESULT_LOG_COLUMN_SEPARATOR_BEGIN, key, QUERY_RESULT_LOG_COLUMN_SEPARATOR, value, QUERY_RESULT_LOG_COLUMN_SEPARATOR);
     }
 
-    private List<Map<String, Object>> runDBQueryFile(String filepath) throws IOException {
+    private List<Map<String, Object>> runDBQueryFile(String filepath) {
         String query = FileHelper.getFileAsString(filepath, "\n");
         query = replaceParameterValues(query);
         logger.info(query);

@@ -2,14 +2,11 @@ package library.engine.api.steps;
 
 import com.jayway.jsonpath.JsonPath;
 import io.cucumber.java.en.Given;
-import library.api.utils.JSONFormatter;
-import library.common.JSONHelper;
 import library.common.TestContext;
 import library.engine.api.AutoEngAPIBaseSteps;
 import library.engine.core.validator.AssertHelper;
 import library.engine.core.validator.ComparisonOperator;
 import library.engine.core.validator.ComparisonType;
-import org.json.JSONArray;
 
 
 import static library.api.utils.XmlHelper.getValueFromXmlDocumentByXpath;

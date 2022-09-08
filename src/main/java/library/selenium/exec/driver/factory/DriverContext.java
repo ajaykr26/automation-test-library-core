@@ -2,7 +2,6 @@ package library.selenium.exec.driver.factory;
 
 import library.common.Constants;
 import library.common.JSONHelper;
-import library.common.Property;
 import library.selenium.exec.driver.utils.DriverContextUtil;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;

@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class Property {
-    protected static Logger logger = LogManager.getLogger(Property.class);
+    protected static final Logger logger = LogManager.getLogger(Property.class);
 
     private Property() {
 

@@ -1,7 +1,6 @@
 package library.engine.core.objectmatcher.fetch;
 
 import library.common.Constants;
-import library.engine.core.AutoEngCoreConstants;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,15 +43,15 @@ public class FetchPageObjects {
             }
             return pageClassSet;
         }
-        List<String> javaClasses = findClassesInPath(Constants.PAGE_OBJECT_JAR_PATH);
-        List<PageObject> packageDetail = findJavaFiles(Constants.PAGE_OBJECT_JAVA_PATH);
+        List<String> javaClasses = findClassesInPath();
+        List<PageObject> packageDetail = findJavaFiles();
 
-        packageDetail.stream().filter(a -> javaClasses.contains(a.getClassName())).collect(Collectors.toList()).stream().
+        packageDetail.stream().filter(a -> javaClasses.contains(a.getClassName())).collect(Collectors.toList()).
                 forEach(pageObject -> {
                     try {
                         pageClassSet.add(Class.forName(pageObject.getPackageName().substring(8, pageObject.getPackageName().indexOf(';')) + "." + pageObject.getClassName()));
                     } catch (ClassNotFoundException exception) {
-
+                        logger.error(exception.getMessage());
                     }
                 });
         return pageClassSet;
@@ -76,8 +75,8 @@ public class FetchPageObjects {
         }
     }
 
-    private static List<String> findClassesInPath(String directory) {
-        Path filepath = Paths.get(directory);
+    private static List<String> findClassesInPath() {
+        Path filepath = Paths.get(Constants.PAGE_OBJECT_JAR_PATH);
         final List<String> fileList = new ArrayList<>();
 
         try (Stream<Path> files = Files.find(filepath, 5, (path, attributes) -> {
@@ -87,7 +86,7 @@ public class FetchPageObjects {
 
             files.forEach(file -> fileList.add(getFileNameWithoutExtension(file)));
             if (fileList.isEmpty()) {
-                logger.error("no java file foun in the path \"{}\"", directory);
+                logger.error("no java file foun in the path \"{}\"", Constants.PAGE_OBJECT_JAR_PATH);
             } else {
                 return fileList;
             }
@@ -97,8 +96,8 @@ public class FetchPageObjects {
         return fileList;
     }
 
-    private static List<PageObject> findJavaFiles(String directory) {
-        Path filepath = Paths.get(directory);
+    private static List<PageObject> findJavaFiles() {
+        Path filepath = Paths.get(Constants.PAGE_OBJECT_JAVA_PATH);
         final List<PageObject> pageObjectList = new ArrayList<>();
 
         try (Stream<Path> files = Files.find(filepath, 5, (path, attributes) -> {
@@ -114,7 +113,7 @@ public class FetchPageObjects {
                 }
             });
             if (pageObjectList.isEmpty()) {
-                logger.error("no java file found in the path \"{}\"", directory);
+                logger.error("no java file found in the path \"{}\"", Constants.PAGE_OBJECT_JAVA_PATH);
             } else {
                 return pageObjectList;
             }
@@ -139,8 +138,8 @@ public class FetchPageObjects {
     }
 
     static class PageObject {
-        String className;
-        String packageName;
+        final String className;
+        final String packageName;
 
         PageObject(String className, String packageName) {
             this.className = className;

@@ -7,7 +7,7 @@ public enum Platforms {
     IOS("ios"),
     ANDROID("android");
 
-    private String plateformType;
+    private final String plateformType;
 
     Platforms(String plateformType) {
         this.plateformType = plateformType;

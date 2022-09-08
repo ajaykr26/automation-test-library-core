@@ -3,7 +3,6 @@ package library.common;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
-import org.testng.asserts.SoftAssert;
 
 import java.nio.file.Files;
 import java.util.*;
@@ -11,7 +10,7 @@ import java.util.*;
 public class TestContext {
 
     private static final List<TestContext> threads = new ArrayList<>();
-    protected Logger logger = LogManager.getLogger(this.getClass().getName());
+    protected final Logger logger = LogManager.getLogger(this.getClass().getName());
     private Map<String, Object> testdata = null;
     private Map<String, Object> propdata = null;
     private SoftAssertions softAssert = null;
