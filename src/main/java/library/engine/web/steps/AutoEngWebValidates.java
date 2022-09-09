@@ -21,26 +21,26 @@ import static library.selenium.core.Screenshot.getImageFromUrl;
 public class AutoEngWebValidates extends AutoEngWebBaseSteps {
 
     @Then("^the user \"([^\"]*)\" to validate that the text at the \"([^\"]*)\" element at the \"([^\"]*)\" page is \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\", \"([^\"]*)\"$")
-    public void validateText(String comparisonType, String objectName, String pageName, String comparisonOperator, String valueToFind, String validationId, String failureFlag) {
+    public void validateText(String comparisonType, String methodObject, String pageObject, String comparisonOperator, String valueToFind, String validationId, String failureFlag) {
         valueToFind = parseValue(valueToFind);
-        String actualResult = getElement(objectName, pageName).getText().trim();
+        String actualResult = getElement(methodObject, pageObject).getText().trim();
         AssertHelper validator = new AssertHelper(ComparisonType.valueOfLabel(comparisonType), ComparisonOperator.valueOfLabel(comparisonOperator), failureFlag);
         validator.performValidation(actualResult, valueToFind, validationId, "validation successful");
 
     }
 
     @Then("^the user \"([^\"]*)\" to validate that the value at the \"([^\"]*)\" element at the \"([^\"]*)\" page is \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\", \"([^\"]*)\"$")
-    public void validateValue(String comparisonType, String objectName, String pageName, String comparisonOperator, String valueToFind, String validationId, String failureFlag) {
+    public void validateValue(String comparisonType, String methodObject, String pageObject, String comparisonOperator, String valueToFind, String validationId, String failureFlag) {
         valueToFind = parseValue(valueToFind);
-        String actualResult = getElement(objectName, pageName).getValue().trim();
+        String actualResult = getElement(methodObject, pageObject).getValue().trim();
         AssertHelper validator = new AssertHelper(ComparisonType.valueOfLabel(comparisonType), ComparisonOperator.valueOfLabel(comparisonOperator), failureFlag);
         validator.performValidation(actualResult, valueToFind, validationId, "validation successful");
 
     }
 
     @Then("^the user validates that the \"([^\"]*)\" element is \"([^\"]*)\" at the \"([^\"]*)\" page \"([^\"]*)\" \"([^\"]*)\"$")
-    public void validateElementStatus(String objectName, String elementStatus, String pageName, String validationId, String failureFlag) {
-        boolean actualResult = getElement(objectName, pageName).validateElement(elementStatus);
+    public void validateElementStatus(String methodObject, String elementStatus, String pageObject, String validationId, String failureFlag) {
+        boolean actualResult = getElement(methodObject, pageObject).validateElement(elementStatus);
 
         AssertHelper validator = new AssertHelper(ComparisonType.COMPARE_STRING, ComparisonOperator.EQ, failureFlag);
         validator.performValidation(actualResult, true, validationId, "validation successful");
@@ -58,23 +58,23 @@ public class AutoEngWebValidates extends AutoEngWebBaseSteps {
     }
 
     @Then("^the user \"([^\"]*)\" to validate that the value in the row num \"([^\"]*)\" and the column num \"([^\"]*)\" in the \"([^\"]*)\" table at the \"([^\"]*)\" page is \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
-    public void validateMatchingCellRowColIndex(String comparisonType, String rowIndex, String columnIndex, String objectName, String pageName, String comparisonOperator, String valueToFind, String validationId, String failureFlag) {
-        String actualResult = getElement(objectName, pageName).getHeadCellElement(Integer.parseInt(rowIndex), Integer.parseInt(columnIndex)).getText();
+    public void validateMatchingCellRowColIndex(String comparisonType, String rowIndex, String columnIndex, String methodObject, String pageObject, String comparisonOperator, String valueToFind, String validationId, String failureFlag) {
+        String actualResult = getElement(methodObject, pageObject).getHeadCellElement(Integer.parseInt(rowIndex), Integer.parseInt(columnIndex)).getText();
         AssertHelper validator = new AssertHelper(ComparisonType.valueOfLabel(comparisonType), ComparisonOperator.valueOfLabel(comparisonOperator), failureFlag);
         validator.performValidation(actualResult, valueToFind, validationId, "validation successful");
     }
 
     @Then("^the user \"([^\"]*)\" to validate that the \"([^\"]*)\" value is found in the \"([^\"]*)\" column in the \"([^\"]*)\" table at the \"([^\"]*)\" page \"([^\"]*)\" \"([^\"]*)\"$")
-    public void validateValueInMatchingColumn(String comparisonType, String valueToFind, String columnName, String objectName, String pageName, String validationId, String failureFlag) {
-        Element element = getElement(objectName, pageName);
+    public void validateValueInMatchingColumn(String comparisonType, String valueToFind, String columnName, String methodObject, String pageObject, String validationId, String failureFlag) {
+        Element element = getElement(methodObject, pageObject);
         String actualResult = element.getDataRowElementInCol(valueToFind, element.getHeadCellNum(columnName)).getText().trim();
         AssertHelper validator = new AssertHelper(ComparisonType.valueOfLabel(comparisonType), ComparisonOperator.CONTAINS, failureFlag);
         validator.performValidation(actualResult, parseValue(valueToFind), validationId, "validation successful");
     }
 
     @Then("^the user validates that the list of \"([^\"]*)\" dropdown options at the \"([^\"]*)\" page is \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
-    public void validateDropdownValues(String objectName, String pageName, String comparisonOperator, String valueToMatch, String validationId, String failureFlag) {
-        List<String> actualResult = getElement(objectName, pageName).getListOfDropdownOptionText();
+    public void validateDropdownValues(String methodObject, String pageObject, String comparisonOperator, String valueToMatch, String validationId, String failureFlag) {
+        List<String> actualResult = getElement(methodObject, pageObject).getListOfDropdownOptionText();
         AssertHelper validator = new AssertHelper(ComparisonType.COMPARE_LIST, ComparisonOperator.valueOfLabel(comparisonOperator), failureFlag);
         validator.performValidation(actualResult, getListFromDictionary(valueToMatch), validationId, "validation successful");
     }
@@ -87,9 +87,9 @@ public class AutoEngWebValidates extends AutoEngWebBaseSteps {
     }
 
     @Then("^the user validates that the \"([^\"]*)\" input field at the \"([^\"]*)\" page has input char limit of \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
-    public void validateAllowedInputCharLimit(String objectName, String pageName, String inputCharLimit, String validationId, String failureFlag) {
+    public void validateAllowedInputCharLimit(String methodObject, String pageObject, String inputCharLimit, String validationId, String failureFlag) {
         int allowedCharLength = Integer.parseInt(inputCharLimit);
-        Element element = getElement(objectName, pageName);
+        Element element = getElement(methodObject, pageObject);
 
         element.sendKeys(getRandomString(allowedCharLength - 1));
         AssertHelper validator = new AssertHelper(ComparisonType.COMPARE_NUMBER, ComparisonOperator.EQ, failureFlag);

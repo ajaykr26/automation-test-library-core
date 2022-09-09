@@ -15,16 +15,16 @@ import static library.engine.core.AutoEngCoreParser.*;
 public class AutoEngWebStoreText extends AutoEngWebBaseSteps {
 
     @Then("^the user stores text from the \"([^\"]*)\" element at the \"([^\"]*)\" page in data dictionary key \"([^\"]*)\"$")
-    public void storeTextFromElement(String objectName, String pageName, String dictionaryKey) {
+    public void storeTextFromElement(String methodObject, String pageObject, String dictionaryKey) {
         dictionaryKey = parseValue(dictionaryKey);
-        String valueToStore = getElement(objectName, pageName).getText();
+        String valueToStore = getElement(methodObject, pageObject).getText();
         TestContext.getInstance().testdataPut(dictionaryKey, valueToStore);
     }
 
     @Then("^the user stores value from the \"([^\"]*)\" element at the \"([^\"]*)\" page in data dictionary key \"([^\"]*)\"$")
-    public void storeValueFromElement(String objectName, String pageName, String dictionaryKey) {
+    public void storeValueFromElement(String methodObject, String pageObject, String dictionaryKey) {
         dictionaryKey = parseValue(dictionaryKey);
-        String valueToStore = getElement(objectName, pageName).getValue();
+        String valueToStore = getElement(methodObject, pageObject).getValue();
         TestContext.getInstance().testdataPut(dictionaryKey, valueToStore);
     }
 
@@ -40,14 +40,14 @@ public class AutoEngWebStoreText extends AutoEngWebBaseSteps {
     }
 
     @Then("^the user stores text from matching cell where row num \"([^\"]*)\" and col num \"([^\"]*)\" in the \"([^\"]*)\" table at the \"([^\"]*)\" page into the data dictionary key \"([^\"]*)\"$")
-    public void storeValueFromMatchingCellOfRowColIndex(String rowIndex, String columnIndex, String objectName, String pageName, String dictionaryKey) {
-        String actualResult = getElement(objectName, pageName).getDataCellElement(Integer.parseInt(rowIndex), Integer.parseInt(columnIndex)).getText().trim();
+    public void storeValueFromMatchingCellOfRowColIndex(String rowIndex, String columnIndex, String methodObject, String pageObject, String dictionaryKey) {
+        String actualResult = getElement(methodObject, pageObject).getDataCellElement(Integer.parseInt(rowIndex), Integer.parseInt(columnIndex)).getText().trim();
         TestContext.getInstance().testdataPut(parseDictionaryKey(dictionaryKey), actualResult);
     }
 
     @Then("^the user stores text from matching cell where row num \"([^\"]*)\" and col num \"([^\"]*)\" in the \"([^\"]*)\" table at the \"([^\"]*)\" page in the data dictionary to the \"([^\"]*)\" list$")
-    public void storeValueFromMatchingCellOfRowColIndexList(String rowIndex, String columnIndex, String objectName, String pageName, String dictionaryKey) {
-        String actualResult = getElement(objectName, pageName).getDataCellElement(Integer.parseInt(rowIndex), Integer.parseInt(columnIndex)).getText().trim();
+    public void storeValueFromMatchingCellOfRowColIndexList(String rowIndex, String columnIndex, String methodObject, String pageObject, String dictionaryKey) {
+        String actualResult = getElement(methodObject, pageObject).getDataCellElement(Integer.parseInt(rowIndex), Integer.parseInt(columnIndex)).getText().trim();
         if (getListFromDictionary(dictionaryKey).size() >0) {
             List<String> list = getListFromDictionary(dictionaryKey);
             list.add(actualResult);
@@ -76,8 +76,8 @@ public class AutoEngWebStoreText extends AutoEngWebBaseSteps {
     }
 
     @Then("^the user stores text from matching cell in \"([^\"]*)\" col where \"([^\"]*)\" col contains \"([^\"]*)\" in the \"([^\"]*)\" table at the \"([^\"]*)\" page into the data dictionary key \"([^\"]*)\"$")
-    public void validateValueInMatchingColumn(String columnName, String columnName1, String valueToFind1, String objectName, String pageName, String dictionaryKey) {
-        Element element = getElement(objectName, pageName);
+    public void validateValueInMatchingColumn(String columnName, String columnName1, String valueToFind1, String methodObject, String pageObject, String dictionaryKey) {
+        Element element = getElement(methodObject, pageObject);
         int rowNum = element.getDataRowNumInCol(valueToFind1, element.getHeadCellNum(columnName1));
         String actualResult = element.getDataCellElement(rowNum, element.getHeadCellNum(columnName)).getText().trim();
         TestContext.getInstance().testdataPut(parseDictionaryKey(dictionaryKey), actualResult);

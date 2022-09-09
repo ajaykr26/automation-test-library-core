@@ -2,7 +2,6 @@ Feature: Set attribute value in a response
 
   @setAttribute
   Scenario: 
-    * def updatedJson = arg.response
-    * def directJsonPath = '$.' + arg.attributeName
-    * karate.set('updatedJson', finalJsonPath, arg.attributeValue)
-    * def replacedValue = karate.JsonPath(updatedJson, finalJsonPath)
+    * def jsonPath = '$[0].' + attributeName
+    * karate.set('response', jsonPath, attributeValue)
+    * def replacedValue = karate.jsonPath(response, jsonPath)

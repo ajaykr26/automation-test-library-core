@@ -10,66 +10,66 @@ import static library.engine.core.AutoEngCoreParser.*;
 public class AutoEngWebSetSelect extends AutoEngWebBaseSteps {
 
     @Then("^the user selects \"([^\"]*)\" value by \"([^\"]*)\" from the \"([^\"]*)\" dropdown at the \"([^\"]*)\" page$")
-    public void selectValueFromDropdown(String value, String by, String objectName, String pageName) {
-        getElement(objectName, pageName).selectValueFromDropdown(value, by);
+    public void selectValueFromDropdown(String value, String by, String methodObject, String pageObject) {
+        getElement(methodObject, pageObject).selectValueFromDropdown(value, by);
     }
 
     @Then("^the user selects \"([^\"]*)\" checkbox at the \"([^\"]*)\" page$")
-    public void selectCheckbox(String objectName, String pageName) {
-        getElement(objectName, pageName).selectCheckboxOrRadioBtn();
+    public void selectCheckbox(String methodObject, String pageObject) {
+        getElement(methodObject, pageObject).selectCheckboxOrRadioBtn();
     }
 
     @Then("^the user unselects \"([^\"]*)\" checkbox at the \"([^\"]*)\" page$")
-    public void unselectCheckbox(String objectName, String pageName) {
-        getElement(objectName, pageName).unselectCheckboxOrRadioBtn();
+    public void unselectCheckbox(String methodObject, String pageObject) {
+        getElement(methodObject, pageObject).unselectCheckboxOrRadioBtn();
 
     }
 
     @Then("^the user selects \"([^\"]*)\" value by \"([^\"]*)\" from the \"([^\"]*)\" checkbox group at the \"([^\"]*)\" page$")
-    public void selectCheckboxFromGroup(String value, String by, String objectName, String pageName) {
+    public void selectCheckboxFromGroup(String value, String by, String methodObject, String pageObject) {
         value = parseValue(value);
-        selectCheckboxOrRadioBtnFromGroup(value, by, objectName, pageName);
+        selectCheckboxOrRadioBtnFromGroup(value, by, methodObject, pageObject);
     }
 
     @Then("^the user unselects \"([^\"]*)\" value by \"([^\"]*)\" from the \"([^\"]*)\" checkbox group at the \"([^\"]*)\" page$")
-    public void unselectCheckboxFromGroup(String value, String by, String objectName, String pageName) {
+    public void unselectCheckboxFromGroup(String value, String by, String methodObject, String pageObject) {
         value = parseValue(value);
-        unselectCheckboxOrRadioBtnFromGroup(value, by, objectName, pageName);
+        unselectCheckboxOrRadioBtnFromGroup(value, by, methodObject, pageObject);
     }
 
     @Then("^the user selects \"([^\"]*)\" radio button at the \"([^\"]*)\" page$")
-    public void selectRadioBtn(String objectName, String pageName) {
-        getElement(objectName, pageName).selectCheckboxOrRadioBtn();
+    public void selectRadioBtn(String methodObject, String pageObject) {
+        getElement(methodObject, pageObject).selectCheckboxOrRadioBtn();
     }
 
     @Then("^the user unselects \"([^\"]*)\" radio button at the \"([^\"]*)\" page$")
-    public void unselectRadioBtn(String objectName, String pageName) {
-        getElement(objectName, pageName).unselectCheckboxOrRadioBtn();
+    public void unselectRadioBtn(String methodObject, String pageObject) {
+        getElement(methodObject, pageObject).unselectCheckboxOrRadioBtn();
     }
 
     @Then("^the user selects \"([^\"]*)\" value by \"([^\"]*)\" from the \"([^\"]*)\" radio button group at the \"([^\"]*)\" page$")
-    public void selectRadioBtnFromGroup(String value, String by, String objectName, String pageName) {
+    public void selectRadioBtnFromGroup(String value, String by, String methodObject, String pageObject) {
         value = parseValue(value);
-        selectCheckboxOrRadioBtnFromGroup(value, by, objectName, pageName);
+        selectCheckboxOrRadioBtnFromGroup(value, by, methodObject, pageObject);
     }
 
     @Then("^the user unselects \"([^\"]*)\" value by \"([^\"]*)\" from the \"([^\"]*)\" radio button group at the \"([^\"]*)\" page$")
-    public void unselectRadioBtnFromGroup(String value, String by, String objectName, String pageName) {
+    public void unselectRadioBtnFromGroup(String value, String by, String methodObject, String pageObject) {
         value = parseValue(value);
-        unselectCheckboxOrRadioBtnFromGroup(value, by, objectName, pageName);
+        unselectCheckboxOrRadioBtnFromGroup(value, by, methodObject, pageObject);
     }
 
     @Then("^the user enters \"([^\"]*)\" into the \"([^\"]*)\" input field at the \"([^\"]*)\" page$")
-    public void enterValueIntoInputField(String textToEnter, String objectName, String pageName) {
+    public void enterValueIntoInputField(String textToEnter, String methodObject, String pageObject) {
         textToEnter = parseValue(textToEnter);
-        getElement(objectName, pageName).sendKeys(textToEnter);
+        getElement(methodObject, pageObject).sendKeys(textToEnter);
 
     }
 
     @Then("^the user enters encrypted \"([^\"]*)\" into the \"([^\"]*)\" input field at the \"([^\"]*)\" page$")
-    public void enterEncryptedValueIntoInputField(String credential, String objectName, String pageName) {
+    public void enterEncryptedValueIntoInputField(String credential, String methodObject, String pageObject) {
         credential = parseSecuredValue(credential);
-        getElement(objectName, pageName).sendKeys(credential);
+        getElement(methodObject, pageObject).sendKeys(credential);
 
     }
 
@@ -85,14 +85,14 @@ public class AutoEngWebSetSelect extends AutoEngWebBaseSteps {
     }
 
     @Then("^the user clears the value at \"([^\"]*)\" input field at the \"([^\"]*)\" page$")
-    public void clearTextFromInputField(String objectName, String pageName) {
-        getElement(objectName, pageName).clear();
+    public void clearTextFromInputField(String methodObject, String pageObject) {
+        getElement(methodObject, pageObject).clear();
     }
 
     @Then("^the user sends \"([^\"]*)\" key into the \"([^\"]*)\" element at the \"([^\"]*)\" page$")
-    public void sendKeysToElement(String keyToSend, String objectName, String pageName) {
+    public void sendKeysToElement(String keyToSend, String methodObject, String pageObject) {
         keyToSend = parseValue(keyToSend);
-        getElement(objectName, pageName).sendKeyboardKeys(keyToSend);
+        getElement(methodObject, pageObject).sendKeyboardKeys(keyToSend);
 
     }
 

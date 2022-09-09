@@ -43,8 +43,8 @@ public class AutoEngWebUtils extends AutoEngWebBaseSteps {
 
 
     @Then("^the user waits for the \"([^\"]*)\" element to be \"([^\"]*)\" at the \"([^\"]*)\" page$")
-    public void waitForElementToBe(String objectName, String expectedStatus, String pageName) {
-        getElement(objectName, pageName).waitForElementToBe(expectedStatus);
+    public void waitForElementToBe(String methodObject, String expectedStatus, String pageObject) {
+        getElement(methodObject, pageObject).waitForElementToBe(expectedStatus);
 
     }
 
@@ -230,18 +230,18 @@ public class AutoEngWebUtils extends AutoEngWebBaseSteps {
     }
 
     @Then("^the user hovers on the \"([^\"]*)\" element at the \"([^\"]*)\" page$")
-    public void hoverOnElement(String objectName, String pageName) {
+    public void hoverOnElement(String methodObject, String pageObject) {
         Actions action = new Actions(getDriver());
-        action.moveToElement(getElement(objectName, pageName).element()).build().perform();
+        action.moveToElement(getElement(methodObject, pageObject).element()).build().perform();
     }
 
     @Then("^the user uploads the \"([^\"]*)\" file to the \"([^\"]*)\" element at the \"([^\"]*)\" page$")
-    public void uploadFiles(String filename, String objectName, String pageName) {
+    public void uploadFiles(String filename, String methodObject, String pageObject) {
         filename = parseValue(filename);
         String filepath = Constants.TESTDATA_PATH + filename;
         File fileToUpload = new File(filepath);
         if (fileToUpload.exists()) {
-            getElement(objectName, pageName).sendKeys(filepath);
+            getElement(methodObject, pageObject).sendKeys(filepath);
         } else {
             String message = String.format("file not found at path: %s", fileToUpload);
             logger.error(message);
@@ -250,10 +250,10 @@ public class AutoEngWebUtils extends AutoEngWebBaseSteps {
     }
 
     @Then("^the user downloads the file from the \"([^\"]*)\" element at the \"([^\"]*)\" page and store the path to data dictionary with key \"([^\"]*)\"$")
-    public void downloadFile(String objectName, String pageName, String dictionaryKey) throws URISyntaxException {
+    public void downloadFile(String methodObject, String pageObject, String dictionaryKey) throws URISyntaxException {
         String pathToCurrentCerts = setTrustStoreBasedOnEnv();
         FileDownloadHelper downloadHelper = new FileDownloadHelper(getDriver());
-        Element downloadLink = getElement(objectName, pageName);
+        Element downloadLink = getElement(methodObject, pageObject);
 
         downloadHelper.setURISpecifiedInAnchorElement(downloadLink);
         File downloadedFile = downloadHelper.downloadFile("");
@@ -266,9 +266,10 @@ public class AutoEngWebUtils extends AutoEngWebBaseSteps {
         setTrustStore(pathToCurrentCerts);
     }
 
-    @Given("^the user performs the \"([^\"]*)\" action at the \"([^\"]*)\" Page$")
-    public void performProcess(String processName, String pageObject) throws InstantiationException, IllegalAccessException {
-        invokeMethod(processName, pageObject);
+
+    @Given("^the user calls the method from \"([^\"]*)\" page object by method name \"([^\"]*)\"$")
+    public void performProcess(String pageObject, String methodObject) throws InstantiationException, IllegalAccessException {
+        invokeMethod(methodObject, pageObject);
     }
 
 }

@@ -40,35 +40,49 @@ public class AutoEngAPISet extends AutoEngAPIBaseSteps {
         }
     }
 
-    @Given("^the user sets \"([^\"]*)\" to \"([^\"]*)\" within the parent attribute \"([^\"]*)\" in the api response at key \"([^\"]*)\"$")
-    public void setAttributeInPayloadWithParent(String attributeName, String attributeValue, String parentAttributeName, String dictionaryKey) {
-        dictionaryKey = parseDictionaryKey(dictionaryKey);
+    @Given("^the user sets \"([^\"]*)\" to \"([^\"]*)\" within the parent attribute \"([^\"]*)\" in the api response and store response in data dictionary with dictionary key \"response\"$")
+    public void setAttributeInPayloadWithParent(String attributeName, String attributeValue, String parentAttributeName) {
         Map<String, Object> args = new HashMap<>();
         args.put(PARENT_ATTRIBUTE_NAME, parentAttributeName);
         args.put(ATTRIBUTE_NAME, attributeName);
-        args.put(RESPONSE, TestContext.getInstance().testdataGet(dictionaryKey));
+        args.put(RESPONSE, TestContext.getInstance().testdataGet(RESPONSE));
         args.put(ATTRIBUTE_VALUE, parseValueToObject(attributeValue));
 
         final String featureToRun = getSetFeature(args.get("parentAttributeName").toString(), StoreType.SINGLE);
-        setAPIAttribute(featureToRun, args, attributeName, dictionaryKey);
+        setAttributeValue(featureToRun, args, attributeName);
     }
 
-    @Given("^the user sets \"([^\"]*)\" to \"([^\"]*)\" in the api response at key \"([^\"]*)\"$")
-    public void setAttributeInPayload(String attributeName, String attributeValue, String dictionaryKey) {
-        setAttributeInPayloadWithParent(attributeName, attributeValue, ROOT_ATTRIBUTE, dictionaryKey);
-    }
 
-    @Given("^the user sets \"([^\"]*)\" to \"([^\"]*)\" at index \"([^\"]*)\" within parent attribute \"([^\"]*)\" in the api response at key \"([^\"]*)\"$")
-    public void setAttributeInPayloadWithParent(String attributeName, String attributeValue, String arrayIndex, String parentAttributeName, String dictionaryKey) {
-        dictionaryKey = parseDictionaryKey(dictionaryKey);
+    @Given("^the user gets \"([^\"]*)\" to \"([^\"]*)\" within the parent attribute \"([^\"]*)\" in the api response and store response in data dictionary with dictionary key \"([^\"]*)\"$")
+    public void getAttributeValueWithInParentAttribute(String attributeName, String parentAttributeName, String dictionaryKey) {
         Map<String, Object> args = new HashMap<>();
         args.put(PARENT_ATTRIBUTE_NAME, parentAttributeName);
         args.put(ATTRIBUTE_NAME, attributeName);
-        args.put(RESPONSE, TestContext.getInstance().testdataGet(dictionaryKey));
+        args.put(RESPONSE, TestContext.getInstance().testdataGet(RESPONSE));
+
+        final String featureToRun = getStoreFeature(args.get("parentAttributeName").toString(), StoreType.SINGLE);
+        storeAttributeValue(featureToRun, args, dictionaryKey);
+    }
+
+    @Given("^the user sets \"([^\"]*)\" to \"([^\"]*)\" in the api response and store response in data dictionary with dictionary key \"response\"$")
+    public void setAttributeInPayload(String attributeName, String attributeValue) {
+        setAttributeInPayloadWithParent(attributeName, attributeValue, ROOT_ATTRIBUTE);
+    }
+
+    @Given("^the user gets \"([^\"]*)\" attribute value from api response within root attribute and store in data dictionary with dictionary key \"([^\"]*)\"$")
+    public void getAttributeValueWithInRootAttribute(String attributeName, String dictionaryKey) {
+        getAttributeValueWithInParentAttribute(attributeName, ROOT_ATTRIBUTE, dictionaryKey);
+    }
+
+    @Given("^the user sets \"([^\"]*)\" to \"([^\"]*)\" at index \"([^\"]*)\" within parent attribute \"([^\"]*)\" in the api response and store response in data dictionary with dictionary key \"response\"$")
+    public void setAttributeInPayloadWithParent(String attributeName, String attributeValue, String arrayIndex, String parentAttributeName) {
+        Map<String, Object> args = new HashMap<>();
+        args.put(PARENT_ATTRIBUTE_NAME, parentAttributeName);
+        args.put(ATTRIBUTE_NAME, attributeName);
         args.put(ATTRIBUTE_VALUE, parseValueToObject(attributeValue));
         args.put("arrayIndex", Integer.parseInt(arrayIndex));
 
         final String featureToRun = getSetFeature(args.get("parentAttributeName").toString(), StoreType.ATINDEX);
-        setAPIAttribute(featureToRun, args, attributeName, dictionaryKey);
+        setAttributeValue(featureToRun, args, attributeName);
     }
 }

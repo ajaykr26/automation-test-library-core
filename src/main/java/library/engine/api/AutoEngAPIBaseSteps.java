@@ -62,7 +62,23 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
 
 
     protected enum StoreType {
-        SINGLE, ATINDEX, ATLAST, LASTCOUNT, FILTERBY, FILTERBYTWO, FULLARRAY
+        SINGLE, ATINDEX, ATLAST, ATKEY, LASTCOUNT, FILTERBY, FILTERBYTWO, FULLARRAY
+    }
+
+
+    protected void callServicesWithTag(String featureName, Map<String, Object> args) {
+        String pathToFeature = getPathToFeature(featureName);
+        if (pathToFeature != null) {
+            args.put("fullPathToFeature", String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, pathToFeature));
+            args.put("pathToFeature", String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, pathToFeature.split(featureName + ".feature")[0]));
+        } else {
+            logger.warn("unable to get path to feature");
+        }
+        callServices(String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, "callServicesWithTagName.feature"), args);
+    }
+
+    protected void callServicesWithoutTag(String featureName, Map<String, Object> args) {
+        callServices(String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, getPathToFeature(featureName)), args);
     }
 
     protected String getSetFeature(String parentAttributeName, StoreType storeType) {
@@ -84,73 +100,26 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         }
     }
 
-    protected void setAPIAttribute(String featureName, Map<String, Object> args, String attributeName, String dictionaryKey) {
-        try {
-            String file = String.format(CLASSPATH_API_FEATURE_FILES, Constants.SET_UTILS_PATH, featureName);
-            Map<String, Object> result = runAPIFeatureFile(file, args);//------------------------
-            TestContext.getInstance().testdataPut(dictionaryKey, result.get("updatedJson"));
-            getReporter().addStepLog(String.format("set %s attribute to %s", attributeName, result.get("replaceVal")));
-        } catch (KarateException karateException) {
-            getReporter().addStepLog(STATUS_FAIL, karateException.getMessage());
-            logger.error(karateException.getMessage());
-            throw karateException;
+    protected String getStoreFeature(String parentAttributeName, StoreType storeType) {
+        String baseFeatureName = "";
+
+        switch (storeType) {
+            case ATINDEX:
+                baseFeatureName = "storeAttributeValueAtIndexWithInParentAttribute";
+                break;
+            case ATKEY:
+                baseFeatureName = "storeAttributeValueAtKeyWithInParentAttribute";
+                break;
+            case SINGLE:
+            default:
+                baseFeatureName = "storeAttributeValueWithInRootAttribute";
+                break;
         }
-    }
-
-    protected void storeAPIAttribute(String featureName, Map<String, Object> args, String dictionaryKey) {
-        try {
-            String file = String.format(CLASSPATH_API_FEATURE_FILES, Constants.SET_UTILS_PATH, featureName);
-            Map<String, Object> result = runAPIFeatureFile(file, args);//------------------------
-            TestContext.getInstance().testdataPut(dictionaryKey, result.get("updatedJson"));
-            getReporter().addStepLog(String.format("set %s attribute to %s", result.get("replaceVal")));
-        } catch (KarateException karateException) {
-            getReporter().addStepLog(STATUS_FAIL, karateException.getMessage());
-            logger.error(karateException.getMessage());
-            throw karateException;
-        }
-    }
-
-    public Map runAPIFeatureFile(String path, Map<String, Object> args) {
-        return Runner.runFeature(path, args, true);
-    }
-
-    protected String getAPIObject(String featureName) {
-        String featureFileName = getMatchingAPIFeature(featureName).getFlatFileObjectName();
-        if (featureFileName != null) {
-            return featureFileName;
+        if (parentAttributeName.equalsIgnoreCase(ROOT_ATTRIBUTE)) {
+            return String.format(FEATURE_PATTERN, baseFeatureName);
         } else {
-            try {
-                throw new FileNotFoundException("the " + featureName + ".feature is not found in the apiobjects folder");
-            } catch (FileNotFoundException exception) {
-                logger.error(exception.getMessage());
-            }
+            return String.format(PARENT_FEATURE_PATTERN, baseFeatureName, WITH_PARENT);
         }
-        return null;
-    }
-
-    protected Map<String, Object> getAPICallParamList(String paramList) {
-        List<String> listOfParams = Arrays.asList(paramList.split("\\|"));
-
-        if (!listOfParams.isEmpty() && listOfParams.get(0).equalsIgnoreCase("ALL")) {
-            return new HashMap<>(TestContext.getInstance().testdata());
-        } else {
-            return listOfParams.stream()
-                    .map(String::trim)
-                    .collect(Collectors.toMap(this::parseDictionaryKey, this::parseValueToObject));
-        }
-    }
-
-    protected Map<String, Object> getAPICallArgs(String argString) {
-        String[] listOfArgsMap = argString.split(":");
-        Map<String, Object> args = new HashMap<>();
-        for (String arg : listOfArgsMap) {
-            args.put(arg.split("\\|")[0], arg.split("\\|")[1]);
-        }
-        return args;
-    }
-
-    protected void callAPIWithoutTag(String featureName, Map<String, Object> args) {
-        callAPI(String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, getPathToFeature(featureName)), args);
     }
 
     private String getPathToFeature(String featureName) {
@@ -174,19 +143,84 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         return filetype.equalsIgnoreCase("json") ? FileHelper.findFileInPath(Constants.SERVICES_PATH, sourceFilename + ".json") : FileHelper.findFileInPath(Constants.SERVICES_PATH, sourceFilename + ".xml");
     }
 
-    private void callAPI(String pathToFeature, Map<String, Object> args) {
+    protected void setAttributeValue(String featureName, Map<String, Object> args, String attributeName) {
+        try {
+            String file = String.format(CLASSPATH_API_FEATURE_FILES, Constants.SET_UTILS_PATH, featureName);
+            Map<String, Object> result = runServices(file, args);//------------------------
+            TestContext.getInstance().testdataPut(RESPONSE, result.get(RESPONSE));
+            getReporter().addStepLog(String.format("set %s attribute to %s", attributeName, result.get("replacedValue")));
+            logger.info("Updated Response JSON: {}", result.get(RESPONSE));
+            logger.info(String.format("set %s attribute to %s", attributeName, result.get("replacedValue")));
+        } catch (KarateException karateException) {
+            getReporter().addStepLog(STATUS_FAIL, karateException.getMessage());
+            logger.error(karateException.getMessage());
+            throw karateException;
+        }
+    }
+
+    protected void storeAttributeValue(String featureName, Map<String, Object> args, String dictionaryKey) {
+        try {
+            String file = String.format(CLASSPATH_API_FEATURE_FILES, Constants.STORE_UTILS_PATH, featureName);
+            Map<String, Object> result = runServices(file, args);//------------------------
+            TestContext.getInstance().testdataPut(dictionaryKey, result.get("attributeValueToStore"));
+            getReporter().addStepLog(String.format("stored value %s: %s", dictionaryKey, result.get("attributeValueToStore")));
+            logger.info(String.format("stored value %s: %s", dictionaryKey, result.get("attributeValueToStore")));
+        } catch (KarateException karateException) {
+            getReporter().addStepLog(STATUS_FAIL, karateException.getMessage());
+            logger.error(karateException.getMessage());
+            throw karateException;
+        }
+    }
+
+    public Map runServices(String path, Map<String, Object> args) {
+        return Runner.runFeature(path, args, true);
+    }
+
+    protected String getAPIObject(String featureName) {
+        String featureFileName = getMatchingAPIFeature(featureName).getFlatFileObjectName();
+        if (featureFileName != null) {
+            return featureFileName;
+        } else {
+            try {
+                throw new FileNotFoundException("the " + featureName + ".feature is not found in the apiobjects folder");
+            } catch (FileNotFoundException exception) {
+                logger.error(exception.getMessage());
+            }
+        }
+        return null;
+    }
+
+    protected Map<String, Object> getParams(String paramList) {
+        List<String> listOfParams = Arrays.asList(paramList.split("\\|"));
+
+        if (!listOfParams.isEmpty() && listOfParams.get(0).equalsIgnoreCase("ALL")) {
+            return new HashMap<>(TestContext.getInstance().testdata());
+        } else {
+            return listOfParams.stream()
+                    .map(String::trim)
+                    .collect(Collectors.toMap(this::parseDictionaryKey, this::parseValueToObject));
+        }
+    }
+
+    protected Map<String, Object> getArgs(String argString) {
+        String[] listOfArgsMap = argString.split(":");
+        Map<String, Object> args = new HashMap<>();
+        for (String arg : listOfArgsMap) {
+            args.put(arg.split("\\|")[0], arg.split("\\|")[1]);
+        }
+        return args;
+    }
+
+    private void callServices(String pathToFeature, Map<String, Object> args) {
         try {
             TestContext.getInstance().setActiveWindowType(API);
-            Map<String, Object> result = runAPIFeatureFile(pathToFeature, args);
+            Map<String, Object> result = runServices(pathToFeature, args);
             TestContext.getInstance().testdataPut(RESPONSE_STATUS, result.get(RESPONSE_STATUS));
-            logger.info("{}: {}", RESPONSE_STATUS, result.get(RESPONSE_STATUS));
             TestContext.getInstance().testdataPut(RESPONSE_HEADER, result.get(RESPONSE_HEADER));
             if (result.get(RESPONSE_XML) != null) {
                 TestContext.getInstance().testdataPut(RESPONSE_XML, result.get(RESPONSE_XML));
-                logger.info("{}: {}", RESPONSE_XML, JSONFormatter.formatJSON(result.get(RESPONSE_XML)));
             } else {
                 TestContext.getInstance().testdataPut(RESPONSE, result.get(RESPONSE));
-                logger.info("{}: {}", RESPONSE, JSONFormatter.formatJSON(result.get(RESPONSE)));
             }
             logRequestResponseData(result);
         } catch (KarateException karateException) {
@@ -197,30 +231,15 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
 
     private void logRequestResponseData(Map<String, Object> result) {
         Map<String, Object> reportInfo = getReportInfo(result);
-        logAndReportText("API request URI: ", reportInfo.get(REQUEST_URI));
+        logAndReportText("Request URI: ", reportInfo.get(REQUEST_URI));
         logAndReportDataTable(reportInfo.get(REQUEST_HEADERS));
-        logAndReportJSON("API request body: ", reportInfo.get(REQUEST_BODY));
-        logAndReportText("API response code: %s", reportInfo.get(RESPONSE_STATUS));
+        logAndReportJSON("Request body: ", reportInfo.get(REQUEST_BODY));
+        logAndReportText("Response code: %s", reportInfo.get(RESPONSE_STATUS));
         if (result.get(RESPONSE_XML) != null) {
-            logAndReportText("API response XML: %s", reportInfo.get(RESPONSE_XML));
+            logAndReportXml("Response XML: %s", reportInfo.get(RESPONSE_XML));
         } else {
-            logAndReportJSON("API response JSON: ", reportInfo.get(RESPONSE));
-
+            logAndReportJSON("Response JSON:  %s", reportInfo.get(RESPONSE));
         }
-
-    }
-
-    private void loadRequestResponseData(Map<String, Object> result) {
-        Map<String, Object> reportInfo = getReportInfo(result);
-        logAndReportText("API request URI: ", reportInfo.get(REQUEST_URI));
-        logAndReportDataTable(reportInfo.get(REQUEST_HEADERS));
-        logAndReportJSON("API request body: ", reportInfo.get(REQUEST_BODY));
-        logAndReportText("API response code: %s", reportInfo.get(RESPONSE_STATUS));
-        logAndReportJSON("API response JSON: ", reportInfo.get(RESPONSE));
-        if (result.get(RESPONSE_XML) != null) {
-            logAndReportText("API response XML: %s", reportInfo.get(RESPONSE));
-        }
-
     }
 
     private Map<String, Object> getReportInfo(Map<String, Object> result) {
@@ -250,7 +269,7 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     private void logAndReportDataTable(Object attributeToLog) {
         if (attributeToLog != null) {
             logger.debug(attributeToLog);
-            getReporter().addDataTable("API request Headers: ", (Map) attributeToLog);
+            getReporter().addDataTable("Request Headers: ", (Map) attributeToLog);
         }
     }
 
@@ -259,8 +278,18 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
             PropertiesConfiguration prop = new PropertiesConfiguration();
             String jsonPayload = JSONFormatter.formatJSON(attributeToLog);
             jsonPayload = filterIgnoredTagFromPayload(jsonPayload, prop);
-            logger.debug(jsonPayload);
+            logger.debug((String.format(logTitle, jsonPayload)));
             getReporter().addTextLogContent(logTitle, jsonPayload);
+        }
+    }
+
+    private void logAndReportXml(String logTitle, Object attributeToLog) {
+        if (attributeToLog != null && !attributeToLog.toString().isEmpty()) {
+            PropertiesConfiguration prop = new PropertiesConfiguration();
+            String xmlPayload = JSONFormatter.formatJSON(attributeToLog);
+            xmlPayload = filterIgnoredTagFromPayload(xmlPayload, prop);
+            logger.debug((String.format(logTitle, xmlPayload)));
+            getReporter().addTextLogContent(logTitle, xmlPayload);
         }
     }
 
@@ -288,17 +317,6 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         }
         return jsonPayload;
 
-    }
-
-    protected void callAPIWithTagName(String featureName, Map<String, Object> args) {
-        String pathToFeature = getPathToFeature(featureName);
-        if (pathToFeature != null) {
-            args.put("fullPathToFeature", String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, pathToFeature));
-            args.put("pathToFeature", String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, pathToFeature.split(featureName + ".feature")[0]));
-        } else {
-            logger.warn("unable to get path to feature");
-        }
-        callAPI(String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, "callAPIWithTagName.feature"), args);
     }
 
     protected void replaceParamsInXMLFile(String sourceFileName, String targetFileName) throws IOException {
