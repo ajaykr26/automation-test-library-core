@@ -16,7 +16,7 @@ public class Formatter {
         StringBuilder dataTable = new StringBuilder();
 
         dataTable.append(getDataTableRow(DATA_TABLE_LOG_DIVIDER, DATA_TABLE_LOG_DIVIDER));
-        dataTable.append(getDataTableRow("Data Dictionary Key", "Data Dictionary Value"));
+        dataTable.append(getDataTableRow("Data Key", "Data Value"));
         dataTable.append(getDataTableRow(DATA_TABLE_LOG_DIVIDER, DATA_TABLE_LOG_DIVIDER));
         getFilteredDataTableAsMap().entrySet()
                 .stream()
@@ -26,18 +26,22 @@ public class Formatter {
         return dataTable.toString();
     }
 
-    public static String getMapAsFormattedTable(Map<String, Object> map) {
+    public static String getPropertiesDataAsFormattedTable() {
         StringBuilder dataTable = new StringBuilder();
 
         dataTable.append(getDataTableRow(DATA_TABLE_LOG_DIVIDER, DATA_TABLE_LOG_DIVIDER));
         dataTable.append(getDataTableRow("Data Key", "Data Value"));
         dataTable.append(getDataTableRow(DATA_TABLE_LOG_DIVIDER, DATA_TABLE_LOG_DIVIDER));
-        map.entrySet()
+        TestContext.getInstance().propData().entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(entry -> dataTable.append(getDataTableRow(entry.getKey(), entry.getValue().toString())));
         dataTable.append(getDataTableRow(DATA_TABLE_LOG_DIVIDER, DATA_TABLE_LOG_DIVIDER));
         return dataTable.toString();
+    }
+
+    public static String getDataDictionaryAndPropertiesDataAsFormattedTable() {
+        return getDataDictionaryAsFormattedTable().concat(getPropertiesDataAsFormattedTable());
     }
 
     private static String getDataTableRow(String key, String value) {
@@ -51,7 +55,7 @@ public class Formatter {
                 .filter(entry -> !entry.getKey().contains("Validation."))
                 .filter(entry -> !entry.getKey().contains("priorData"))
                 .filter(entry -> !entry.getKey().matches(".*(?i)(password|pwd|pass|user|username|userid)(?i).*"))
-                .filter(entry -> !entry.getKey().matches(".*(?i)(response|responseXml|responseHeaders|responseStatus)(?i).*"))
+                .filter(entry -> !entry.getKey().matches(".*(?i)(response|responseXml|responseHeaders|responseStatus|requestBody)(?i).*"))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

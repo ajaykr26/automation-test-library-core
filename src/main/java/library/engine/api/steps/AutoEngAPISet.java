@@ -19,51 +19,28 @@ import static library.engine.core.AutoEngCoreParser.parseValue;
 
 public class AutoEngAPISet extends AutoEngAPIBaseSteps {
 
-    @Given("^the user sets the value \"([^\"]*)\" with the key \"([^\"]*)\" at the jsonpath \"([^\"]*)\" in the json request file \"([^\"]*)\"$")
-    public static void putValueInRequestJsonObject(String value, String key, String jsonpath, String filename) {
-        value = parseValue(value);
-        JSONObject jsonObject = JSONHelper.getJSONObject(Constants.SERVICES_PATH + filename);
-        if (jsonObject != null) {
-            try (FileWriter file = new FileWriter(Constants.SERVICES_PATH + filename)) {
-                file.write(JsonPath.parse(jsonObject.toString()).put(jsonpath, key, value).jsonString());
-                file.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    @Given("^the user replaces parameter value in the api request xml file \"([^\"]*)\" and save to the new xml file \"([^\"]*)\"$")
+    public void replaceParamsInRequestXmlFile(String sourceFileName, String targetFileName) throws IOException {
+        replaceParamsInXMLFile(sourceFileName, targetFileName);
     }
 
-    @Given("^the user sets the value \"([^\"]*)\" at the jsonpath \"([^\"]*)\" in the json request file \"([^\"]*)\"$")
-    public static void addValueInRequestJsonArray(String value, String jsonpath, String filename) {
-        value = parseValue(value);
-        JSONObject jsonObject = JSONHelper.getJSONObject(Constants.SERVICES_PATH + filename);
-        if (jsonObject != null) {
-            try (FileWriter file = new FileWriter(Constants.SERVICES_PATH + filename)) {
-                file.write(JsonPath.parse(jsonObject.toString()).add(jsonpath, value).jsonString());
-                file.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Given("^the user replaces parameter value in the \"([^\"]*)\" api request xml file and save to the new xml file \"([^\"]*)\"$")
-    public void callListOfAPI(String xmlTemplate, String xmlTarget) throws IOException {
-        replaceParamsInXMLFile(xmlTemplate, xmlTarget);
-    }
-
-    @Given("^the user replaces parameter value in the \"([^\"]*)\" api request json file and save to the new json file \"([^\"]*)\"$")
-    public void callListOfAPIJ(String xmlTemplate, String xmlTarget) throws IOException {
-        replaceParamsInJsonFile(xmlTemplate, xmlTarget);
+    @Given("^the user replaces parameter value in the api request json file \"([^\"]*)\" and save to the new json file \"([^\"]*)\"$")
+    public void replaceParamsInRequestJsonFile(String sourceFileName, String targetFileName) throws IOException {
+        replaceParamsInJsonFile(sourceFileName, targetFileName);
     }
 
     @Given("^the user replaces parameter value in the api request \"([^\"]*)\" file \"([^\"]*)\" and save to the new file \"([^\"]*)\"$")
     public void replaceParamsInRequestFile(String filetype, String sourceFileName, String targetFileName) throws IOException {
-        replaceParamsInRequest(filetype, sourceFileName, targetFileName);
+        if (filetype.equalsIgnoreCase("json")) {
+            replaceParamsInJsonFile(sourceFileName, targetFileName);
+        } else if (filetype.equalsIgnoreCase("xml")) {
+            replaceParamsInXMLFile(sourceFileName, targetFileName);
+        } else {
+            logger.error("File type {} not supported", filetype);
+        }
     }
 
-
-    @Given("^the user set \"([^\"]*)\" to \"([^\"]*)\" within parent attribute \"([^\"]*)\" in the API response at key \"([^\"]*)\"$")
+    @Given("^the user sets \"([^\"]*)\" to \"([^\"]*)\" within the parent attribute \"([^\"]*)\" in the api response at key \"([^\"]*)\"$")
     public void setAttributeInPayloadWithParent(String attributeName, String attributeValue, String parentAttributeName, String dictionaryKey) {
         dictionaryKey = parseDictionaryKey(dictionaryKey);
         Map<String, Object> args = new HashMap<>();
@@ -76,12 +53,12 @@ public class AutoEngAPISet extends AutoEngAPIBaseSteps {
         setAPIAttribute(featureToRun, args, attributeName, dictionaryKey);
     }
 
-    @Given("^the user set \"([^\"]*)\" to \"([^\"]*)\" in the API response at key \"([^\"]*)\"$")
+    @Given("^the user sets \"([^\"]*)\" to \"([^\"]*)\" in the api response at key \"([^\"]*)\"$")
     public void setAttributeInPayload(String attributeName, String attributeValue, String dictionaryKey) {
         setAttributeInPayloadWithParent(attributeName, attributeValue, ROOT_ATTRIBUTE, dictionaryKey);
     }
 
-    @Given("^the user set \"([^\"]*)\" to \"([^\"]*)\" at index \"([^\"]*)\" within parent attribute \"([^\"]*)\" in the API response at key \"([^\"]*)\"$")
+    @Given("^the user sets \"([^\"]*)\" to \"([^\"]*)\" at index \"([^\"]*)\" within parent attribute \"([^\"]*)\" in the api response at key \"([^\"]*)\"$")
     public void setAttributeInPayloadWithParent(String attributeName, String attributeValue, String arrayIndex, String parentAttributeName, String dictionaryKey) {
         dictionaryKey = parseDictionaryKey(dictionaryKey);
         Map<String, Object> args = new HashMap<>();

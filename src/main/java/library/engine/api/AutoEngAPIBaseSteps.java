@@ -111,7 +111,6 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     }
 
     public Map runAPIFeatureFile(String path, Map<String, Object> args) {
-
         return Runner.runFeature(path, args, true);
     }
 
@@ -178,13 +177,10 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     private void callAPI(String pathToFeature, Map<String, Object> args) {
         try {
             TestContext.getInstance().setActiveWindowType(API);
-
             Map<String, Object> result = runAPIFeatureFile(pathToFeature, args);
-
             TestContext.getInstance().testdataPut(RESPONSE_STATUS, result.get(RESPONSE_STATUS));
             logger.info("{}: {}", RESPONSE_STATUS, result.get(RESPONSE_STATUS));
             TestContext.getInstance().testdataPut(RESPONSE_HEADER, result.get(RESPONSE_HEADER));
-
             if (result.get(RESPONSE_XML) != null) {
                 TestContext.getInstance().testdataPut(RESPONSE_XML, result.get(RESPONSE_XML));
                 logger.info("{}: {}", RESPONSE_XML, JSONFormatter.formatJSON(result.get(RESPONSE_XML)));
@@ -305,12 +301,12 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         callAPI(String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, "callAPIWithTagName.feature"), args);
     }
 
-    protected void replaceParamsInXMLFile(String xmlTemplateFile, String xmlTarget) throws IOException {
-        final String pathToXmlTemplate = getPathToXML(xmlTemplateFile);
-        String templateXMLAsString = FileHelper.getFileAsString(pathToXmlTemplate, "\n");
+    protected void replaceParamsInXMLFile(String sourceFileName, String targetFileName) throws IOException {
+        final String pathToSourceFile = getPathToXML(sourceFileName);
+        String requestString = FileHelper.getFileAsString(pathToSourceFile, "\n");
 
-        if (templateXMLAsString != null) {
-            templateXMLAsString = replaceParameterValues(templateXMLAsString);
+        if (requestString != null) {
+            requestString = replaceParameterValues(requestString);
             PropertiesConfiguration prop = new PropertiesConfiguration();
             boolean val = Boolean.parseBoolean(prop.getString("ignoreTagsXML"));
             String fetchedVal = prop.getString("ignoreTagInformation");
@@ -319,26 +315,26 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
                 for (String token : list) {
                     if (fetchedVal != null && !fetchedVal.isEmpty()) {
                         Pattern pattern = Pattern.compile("<" + token + ">" + "(\\S+)" + "</" + token + ">");
-                        Matcher matcher = pattern.matcher(templateXMLAsString);
+                        Matcher matcher = pattern.matcher(requestString);
                         if (!matcher.find()) {
-                            TestContext.getInstance().testdataPut(xmlTarget, templateXMLAsString);
+                            TestContext.getInstance().testdataPut(REQUEST_BODY, requestString);
                         }
                     }
                 }
             } else {
-                TestContext.getInstance().testdataPut(xmlTarget, templateXMLAsString);
+                TestContext.getInstance().testdataPut(REQUEST_BODY, requestString);
             }
-            final String newFileName = Paths.get(String.format("%s/%s.xml", Paths.get(pathToXmlTemplate).getParent().toString(), xmlTarget)).toAbsolutePath().toString();
-            Files.writeFile(templateXMLAsString, new File(newFileName));
+            final String newFileName = Paths.get(String.format("%s/%s.xml", Paths.get(pathToSourceFile).getParent().toString(), targetFileName)).toAbsolutePath().toString();
+            Files.writeFile(requestString, new File(newFileName));
         }
     }
 
-    protected void replaceParamsInJsonFile(String xmlTemplateFile, String xmlTarget) throws IOException {
-        final String pathToXmlTemplate = getPathToJson(xmlTemplateFile);
-        String templateXMLAsString = FileHelper.getFileAsString(pathToXmlTemplate, "\n");
+    protected void replaceParamsInJsonFile(String sourceFileName, String targetFileName) throws IOException {
+        final String pathToSourceFile = getPathToJson(sourceFileName);
+        String requestString = FileHelper.getFileAsString(pathToSourceFile, "\n");
 
-        if (templateXMLAsString != null) {
-            templateXMLAsString = replaceParameterValues(templateXMLAsString);
+        if (requestString != null) {
+            requestString = replaceParameterValues(requestString);
             PropertiesConfiguration prop = new PropertiesConfiguration();
             boolean val = Boolean.parseBoolean(prop.getString("ignoreTagsXML"));
             String fetchedVal = prop.getString("ignoreTagInformation");
@@ -347,17 +343,17 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
                 for (String token : list) {
                     if (fetchedVal != null && !fetchedVal.isEmpty()) {
                         Pattern pattern = Pattern.compile("<" + token + ">" + "(\\S+)" + "</" + token + ">");
-                        Matcher matcher = pattern.matcher(templateXMLAsString);
+                        Matcher matcher = pattern.matcher(requestString);
                         if (!matcher.find()) {
-                            TestContext.getInstance().testdataPut(xmlTarget, templateXMLAsString);
+                            TestContext.getInstance().testdataPut(REQUEST_BODY, requestString);
                         }
                     }
                 }
             } else {
-                TestContext.getInstance().testdataPut(xmlTarget, templateXMLAsString);
+                TestContext.getInstance().testdataPut(REQUEST_BODY, requestString);
             }
-            final String newFileName = Paths.get(String.format("%s/%s.json", Paths.get(pathToXmlTemplate).getParent().toString(), xmlTarget)).toAbsolutePath().toString();
-            Files.writeFile(templateXMLAsString, new File(newFileName));
+            final String newFileName = Paths.get(String.format("%s/%s.json", Paths.get(pathToSourceFile).getParent().toString(), targetFileName)).toAbsolutePath().toString();
+            Files.writeFile(requestString, new File(newFileName));
         }
     }
 
@@ -377,12 +373,12 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
                         Pattern pattern = Pattern.compile("<" + token + ">" + "(\\S+)" + "</" + token + ">");
                         Matcher matcher = pattern.matcher(requestString);
                         if (!matcher.find()) {
-                            TestContext.getInstance().testdataPut(targetFileName, requestString);
+                            TestContext.getInstance().testdataPut(REQUEST_BODY, requestString);
                         }
                     }
                 }
             } else {
-                TestContext.getInstance().testdataPut(targetFileName, requestString);
+                TestContext.getInstance().testdataPut(REQUEST_BODY, requestString);
             }
             String NewRequestFile = filetype.equalsIgnoreCase("json") ? "%s/%s.json" : "%s/%s.xml";
             final String newFileName = Paths.get(String.format(NewRequestFile, Paths.get(pathToXmlTemplate).getParent().toString(), targetFileName)).toAbsolutePath().toString();

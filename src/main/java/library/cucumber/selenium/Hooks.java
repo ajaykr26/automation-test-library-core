@@ -17,8 +17,8 @@ public class Hooks implements En {
         Before(30, (Scenario scenario) -> {
         });
         After(30, (Scenario scenario) -> {//1
-            logger.info(Formatter.getDataDictionaryAsFormattedTable());
-            logger.info(Formatter.getMapAsFormattedTable(TestContext.getInstance().propData()));
+            logger.info("Test data from data dictionary {}", Formatter.getDataDictionaryAsFormattedTable());
+            logger.info("Test data from environment properties file {}", Formatter.getPropertiesDataAsFormattedTable());
             if (DriverContext.getInstance().getDriverManager() != null) {
                 if (scenario.isFailed()) {
                     takeScreenShotOnFailure();

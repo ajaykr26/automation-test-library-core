@@ -1,4 +1,3 @@
-@ignore
 Feature: Set attribute value in a response with parent
 
 
