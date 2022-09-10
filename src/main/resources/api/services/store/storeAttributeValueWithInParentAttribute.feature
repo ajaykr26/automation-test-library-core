@@ -1,14 +1,19 @@
 Feature: Set attribute value in a response with parent
 
 
-  @setAttributeValueWithParent
-  Scenario: 
-    * def updatedJson = arg.response
+  @json
+  Scenario: json parsing
+    * def arrayJsonPath = '$..' + parentAttributeName + '[0].' + attributeName
+    * def directJsonPath = '$..' + parentAttributeName + '.' + attributeName
+    * def finalJsonPath = karate.sizeOf(arrayJsonPath > 0 ? arrayJsonPath : directJsonPath)
+    * def attributeValue = karate.jsonPath(response, finalJsonPath)
 
-    * def arrayJsonPath = '$..' + arg.parentAttributeName + '[0].' + arg.attributeName
-    * def directJsonPath = '$..' + arg.parentAttributeName + '.' + arg.attributeName
-    * def valueToReplace = karate.JsonPath(updatedJson, arrayJsonPath)
-    * def finalJsonPath = karate.sizeOf(valueToReplace > 0 ? arrayJsonPath : directJsonPath)
+  @xml
+  Scenario: xml parsing
+#    * def xpath = '//' + parentAttributeName + '/' + attributeName
+#    * def attributeValue = karate.xmlPath(responseXml, xpath)
 
-    * karate.set('updatedJson', finalJsonPath, arg.attributeValue)
-    * def replacedValue = karate.jsonPath(updatedJson, finalJsonPath)
+    * def listOfXpath = '//' + parentAttributeName + '//' + attributeName
+    * def xpath = '//' + parentAttributeName + '/' + attributeName
+    * def finalXpath = karate.sizeOf(listOfXpath > 0 ? listOfXpath : xpath)
+    * def attributeValue = karate.xmlPath(response, finalXpath)

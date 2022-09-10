@@ -49,80 +49,28 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     protected static final String RESPONSE_KEY = "fw.lastAPIResponse";
     protected static final String ATTRIBUTE_NAME = "attributeName";
     protected static final String ATTRIBUTE_VALUE = "attributeValue";
+    protected static final String INDEX = "Index";
     protected static final String CLASSPATH_API_FEATURE_FILES = "classpath:%s%s";
     protected static final String REQUEST_URI = "requestURI";
     protected static final String REQUEST_HEADERS = "requestHeaders";
     protected static final String REQUEST_BODY = "requestBody";
     protected static final String RESPONSE_XML = "responseXml";
     protected static final String RESPONSE_XML_KEY = "responseXMLKey";
-    protected static final String WITH_PARENT = "withParent";
-    protected static final String PARENT_FEATURE_PATTERN = "%s%s.feature";
-    protected static final String FEATURE_PATTERN = "%s.feature";
-    protected static final String TOPIC_KEY = "fw.activeKafkaTopic";
+    protected static final String TAG_NAME = "tagName";
+    protected static final String JSONPATH = "jsonpath";
+    protected static final String XPATH = "xpath";
+    public static final String FEATURE_PATH_TO_CALL = "featurePathToCall";
 
-
-    protected enum StoreType {
-        SINGLE, ATINDEX, ATLAST, ATKEY, LASTCOUNT, FILTERBY, FILTERBYTWO, FULLARRAY
+    protected enum Feature {
+        callServices, set, store, remove, WithTag, WithoutTag, LocatedAtPath, AttributeValue,
+        AtIndex, AtKey, WithInParentAttribute, WithInRootAttribute
     }
 
-
-    protected void callServicesWithTag(String featureName, Map<String, Object> args) {
-        String pathToFeature = getPathToFeature(featureName);
-        if (pathToFeature != null) {
-            args.put("fullPathToFeature", String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, pathToFeature));
-            args.put("pathToFeature", String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, pathToFeature.split(featureName + ".feature")[0]));
-        } else {
-            logger.warn("unable to get path to feature");
-        }
-        callServices(String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, "callServicesWithTagName.feature"), args);
+    public Map runServices(String path, Map<String, Object> args) {
+        return Runner.runFeature(path, args, true);
     }
 
-    protected void callServicesWithoutTag(String featureName, Map<String, Object> args) {
-        callServices(String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, getPathToFeature(featureName)), args);
-    }
-
-    protected String getSetFeature(String parentAttributeName, StoreType storeType) {
-        String baseFeatureName = "";
-
-        switch (storeType) {
-            case ATINDEX:
-                baseFeatureName = "setAttributeAtIndex";
-                break;
-            case SINGLE:
-            default:
-                baseFeatureName = "setAttribute";
-                break;
-        }
-        if (parentAttributeName.equalsIgnoreCase(ROOT_ATTRIBUTE)) {
-            return String.format(FEATURE_PATTERN, baseFeatureName);
-        } else {
-            return String.format(PARENT_FEATURE_PATTERN, baseFeatureName, WITH_PARENT);
-        }
-    }
-
-    protected String getStoreFeature(String parentAttributeName, StoreType storeType) {
-        String baseFeatureName = "";
-
-        switch (storeType) {
-            case ATINDEX:
-                baseFeatureName = "storeAttributeValueAtIndexWithInParentAttribute";
-                break;
-            case ATKEY:
-                baseFeatureName = "storeAttributeValueAtKeyWithInParentAttribute";
-                break;
-            case SINGLE:
-            default:
-                baseFeatureName = "storeAttributeValueWithInRootAttribute";
-                break;
-        }
-        if (parentAttributeName.equalsIgnoreCase(ROOT_ATTRIBUTE)) {
-            return String.format(FEATURE_PATTERN, baseFeatureName);
-        } else {
-            return String.format(PARENT_FEATURE_PATTERN, baseFeatureName, WITH_PARENT);
-        }
-    }
-
-    private String getPathToFeature(String featureName) {
+    protected String getPathToFeature(String featureName) {
         String tempPath = FileHelper.findFileInPath(Constants.API_OBJECT_PATH, featureName + ".feature");
         if (tempPath != null) {
             return tempPath.split(Constants.API_OBJECT_FOLDER)[1];
@@ -131,26 +79,71 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         }
     }
 
-    private String getPathToXML(String featureName) {
+    private String getPathToRequestXML(String featureName) {
         return FileHelper.findFileInPath(Constants.SERVICES_PATH, featureName + ".xml");
     }
 
-    private String getPathToJson(String featureName) {
+    private String getPathToRequestJson(String featureName) {
         return FileHelper.findFileInPath(Constants.SERVICES_PATH, featureName + ".json");
     }
 
-    private String getPathToSourceFile(String filetype, String sourceFilename) {
+    private String getPathToRequestFile(String filetype, String sourceFilename) {
         return filetype.equalsIgnoreCase("json") ? FileHelper.findFileInPath(Constants.SERVICES_PATH, sourceFilename + ".json") : FileHelper.findFileInPath(Constants.SERVICES_PATH, sourceFilename + ".xml");
     }
 
-    protected void setAttributeValue(String featureName, Map<String, Object> args, String attributeName) {
+    protected void callServicesWithTag(Map<String, Object> args) {
+        TestContext.getInstance().setActiveWindowType(API);
         try {
-            String file = String.format(CLASSPATH_API_FEATURE_FILES, Constants.SET_UTILS_PATH, featureName);
-            Map<String, Object> result = runServices(file, args);//------------------------
+            String featureNameToRun = String.format("%s%s.feature", Feature.callServices, Feature.WithTag);
+            String featurePathToRun = String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, featureNameToRun);
+
+            Map<String, Object> result = runServices(featurePathToRun, args);
+            TestContext.getInstance().testdataPut(RESPONSE_STATUS, result.get(RESPONSE_STATUS));
+            TestContext.getInstance().testdataPut(RESPONSE_HEADER, result.get(RESPONSE_HEADER));
+            if (result.get(RESPONSE_XML) != null) {
+                TestContext.getInstance().testdataPut(RESPONSE_XML, result.get(RESPONSE_XML));
+            } else {
+                TestContext.getInstance().testdataPut(RESPONSE, result.get(RESPONSE));
+            }
+            logRequestResponseData(result);
+        } catch (KarateException karateException) {
+            getReporter().addStepLog(STATUS_FAIL, "Step Failed: " + args.get("featureName") + "execution is failed. see error message: " + karateException.getMessage());
+            throw karateException;
+        }
+    }
+
+    protected void callServicesWithoutTag(Map<String, Object> args) {
+        TestContext.getInstance().setActiveWindowType(API);
+        try {
+            String featureNameToRun = String.format("%s%s.feature", Feature.callServices, Feature.WithoutTag);
+            String featurePathToRun = String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, featureNameToRun);
+
+            Map<String, Object> result = runServices(featurePathToRun, args);
+            TestContext.getInstance().testdataPut(RESPONSE_STATUS, result.get(RESPONSE_STATUS));
+            TestContext.getInstance().testdataPut(RESPONSE_HEADER, result.get(RESPONSE_HEADER));
+            if (result.get(RESPONSE_XML) != null) {
+                TestContext.getInstance().testdataPut(RESPONSE_XML, result.get(RESPONSE_XML));
+            } else {
+                TestContext.getInstance().testdataPut(RESPONSE, result.get(RESPONSE));
+            }
+            logRequestResponseData(result);
+        } catch (KarateException karateException) {
+            getReporter().addStepLog(STATUS_FAIL, "Step Failed: " + args.get("featureName") + "execution is failed. see error message: " + karateException.getMessage());
+            throw karateException;
+        }
+    }
+
+    protected void setAttributeValue(Map<String, Object> args, String attributeName) {
+        try {
+            String featureNameToRun = String.format("%s%s.feature", Feature.callServices, Feature.WithTag);
+            String featurePathToRun = String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, featureNameToRun);
+
+            Map<String, Object> result = runServices(featurePathToRun, args);
             TestContext.getInstance().testdataPut(RESPONSE, result.get(RESPONSE));
-            getReporter().addStepLog(String.format("set %s attribute to %s", attributeName, result.get("replacedValue")));
+
+            getReporter().addStepLog(String.format("set %s attribute to %s", attributeName, result.get(ATTRIBUTE_VALUE)));
             logger.info("Updated Response JSON: {}", result.get(RESPONSE));
-            logger.info(String.format("set %s attribute to %s", attributeName, result.get("replacedValue")));
+            logger.info(String.format("set %s attribute to %s", attributeName, result.get(ATTRIBUTE_VALUE)));
         } catch (KarateException karateException) {
             getReporter().addStepLog(STATUS_FAIL, karateException.getMessage());
             logger.error(karateException.getMessage());
@@ -158,13 +151,14 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         }
     }
 
-    protected void storeAttributeValue(String featureName, Map<String, Object> args, String dictionaryKey) {
+    protected void storeAttributeValue(Map<String, Object> args, String dictionaryKey) {
         try {
-            String file = String.format(CLASSPATH_API_FEATURE_FILES, Constants.STORE_UTILS_PATH, featureName);
-            Map<String, Object> result = runServices(file, args);//------------------------
-            TestContext.getInstance().testdataPut(dictionaryKey, result.get("attributeValueToStore"));
-            getReporter().addStepLog(String.format("stored value %s: %s", dictionaryKey, result.get("attributeValueToStore")));
-            logger.info(String.format("stored value %s: %s", dictionaryKey, result.get("attributeValueToStore")));
+            String featureNameToRun = String.format("%s%s.feature", Feature.callServices, Feature.WithTag);
+            String featurePathToRun = String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, featureNameToRun);
+            Map<String, Object> result = runServices(featurePathToRun, args);
+            TestContext.getInstance().testdataPut(dictionaryKey, result.get(ATTRIBUTE_VALUE));
+            getReporter().addStepLog(String.format("stored value %s: %s", dictionaryKey, result.get(ATTRIBUTE_VALUE)));
+            logger.info(String.format("stored value %s: %s", dictionaryKey, result.get(ATTRIBUTE_VALUE)));
         } catch (KarateException karateException) {
             getReporter().addStepLog(STATUS_FAIL, karateException.getMessage());
             logger.error(karateException.getMessage());
@@ -172,8 +166,20 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
         }
     }
 
-    public Map runServices(String path, Map<String, Object> args) {
-        return Runner.runFeature(path, args, true);
+    protected void removeAttribute(String featureNameToCall, Map<String, Object> args, String dictionaryKey) {
+        try {
+            args.put(FEATURE_PATH_TO_CALL, String.format(CLASSPATH_API_FEATURE_FILES, Constants.STORE_UTILS_PATH, featureNameToCall));
+            String featureNameToRun = String.format("%s%s.feature", Feature.callServices, Feature.WithTag);
+            String featurePathToRun = String.format(CLASSPATH_API_FEATURE_FILES, Constants.CALL_UTILS_PATH, featureNameToRun);
+            Map<String, Object> result = runServices(featurePathToRun, args);
+            TestContext.getInstance().testdataPut(dictionaryKey, result.get(ATTRIBUTE_VALUE));
+            getReporter().addStepLog(String.format("stored value %s: %s", dictionaryKey, result.get(ATTRIBUTE_VALUE)));
+            logger.info(String.format("stored value %s: %s", dictionaryKey, result.get(ATTRIBUTE_VALUE)));
+        } catch (KarateException karateException) {
+            getReporter().addStepLog(STATUS_FAIL, karateException.getMessage());
+            logger.error(karateException.getMessage());
+            throw karateException;
+        }
     }
 
     protected String getAPIObject(String featureName) {
@@ -209,24 +215,6 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
             args.put(arg.split("\\|")[0], arg.split("\\|")[1]);
         }
         return args;
-    }
-
-    private void callServices(String pathToFeature, Map<String, Object> args) {
-        try {
-            TestContext.getInstance().setActiveWindowType(API);
-            Map<String, Object> result = runServices(pathToFeature, args);
-            TestContext.getInstance().testdataPut(RESPONSE_STATUS, result.get(RESPONSE_STATUS));
-            TestContext.getInstance().testdataPut(RESPONSE_HEADER, result.get(RESPONSE_HEADER));
-            if (result.get(RESPONSE_XML) != null) {
-                TestContext.getInstance().testdataPut(RESPONSE_XML, result.get(RESPONSE_XML));
-            } else {
-                TestContext.getInstance().testdataPut(RESPONSE, result.get(RESPONSE));
-            }
-            logRequestResponseData(result);
-        } catch (KarateException karateException) {
-            getReporter().addStepLog(STATUS_FAIL, "Step Failed: " + args.get("featureName") + "execution is failed. see error message: " + karateException.getMessage());
-            throw karateException;
-        }
     }
 
     private void logRequestResponseData(Map<String, Object> result) {
@@ -320,7 +308,7 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     }
 
     protected void replaceParamsInXMLFile(String sourceFileName, String targetFileName) throws IOException {
-        final String pathToSourceFile = getPathToXML(sourceFileName);
+        final String pathToSourceFile = getPathToRequestXML(sourceFileName);
         String requestString = FileHelper.getFileAsString(pathToSourceFile, "\n");
 
         if (requestString != null) {
@@ -348,7 +336,7 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     }
 
     protected void replaceParamsInJsonFile(String sourceFileName, String targetFileName) throws IOException {
-        final String pathToSourceFile = getPathToJson(sourceFileName);
+        final String pathToSourceFile = getPathToRequestJson(sourceFileName);
         String requestString = FileHelper.getFileAsString(pathToSourceFile, "\n");
 
         if (requestString != null) {
@@ -376,7 +364,7 @@ public class AutoEngAPIBaseSteps extends AutoEngCoreBaseStep {
     }
 
     protected void replaceParamsInRequest(String filetype, String sourceFileName, String targetFileName) throws IOException {
-        final String pathToXmlTemplate = getPathToSourceFile(filetype, sourceFileName);
+        final String pathToXmlTemplate = getPathToRequestFile(filetype, sourceFileName);
         String requestString = FileHelper.getFileAsString(pathToXmlTemplate, "\n");
 
         if (requestString != null) {

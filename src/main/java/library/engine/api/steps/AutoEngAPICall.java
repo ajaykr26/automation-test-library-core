@@ -12,40 +12,39 @@ import static library.engine.core.objectmatcher.ObjectFinder.invokeMethod;
 
 
 public class AutoEngAPICall extends AutoEngAPIBaseSteps {
-    public static final String FEATURE_NAME = "featureName";
 
     @Given("^the user calls api service from \"([^\"]*)\" api object$")
     public void callServicesWithoutTagName(String featureName) {
         featureName = getAPIObject(featureName);
         Map<String, Object> args = getParams("ALL");
-        args.put(FEATURE_NAME, featureName);
-        callServicesWithoutTag(featureName, args);
+        args.put(FEATURE_PATH_TO_CALL, String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, getPathToFeature(featureName)));
+        callServicesWithoutTag( args);
     }
 
     @Given("^the user calls api service from \"([^\"]*)\" api object with params \"([^\"]*)\"$")
     public void callServicesWithParams(String featureName, String params) {
         featureName = getAPIObject(featureName);
         Map<String, Object> args = getParams(params);
-        args.put(FEATURE_NAME, featureName);
-        callServicesWithoutTag(featureName, args);
+        args.put(FEATURE_PATH_TO_CALL, String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, getPathToFeature(featureName)));
+        callServicesWithoutTag( args);
     }
 
     @Given("^the user calls api service from \"([^\"]*)\" api object by tag name \"([^\"]*)\"$")
     public void callServicesWithTagName(String featureName, String tagName) {
         featureName = getAPIObject(featureName);
         Map<String, Object> args = getParams("ALL");
-        args.put(FEATURE_NAME, featureName);
-        args.put("tagName", tagName);
-        callServicesWithTag(featureName, args);
+        args.put(TAG_NAME, tagName);
+        args.put(FEATURE_PATH_TO_CALL, String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, getPathToFeature(featureName)));
+        callServicesWithTag( args);
     }
 
     @Given("^the user calls api service from \"([^\"]*)\" api object by tag name \"([^\"]*)\" with params \"(.*)\"$")
     public void callServicesWithTagNameAndArgs(String featureName, String tagName, String params) {
         featureName = getAPIObject(featureName);
         Map<String, Object> args = getParams(params);
-        args.put(FEATURE_NAME, featureName);
-        args.put("tagName", tagName);
-        callServicesWithTag(featureName, args);
+        args.put(TAG_NAME, tagName);
+        args.put(FEATURE_PATH_TO_CALL, String.format(CLASSPATH_API_FEATURE_FILES, Constants.API_OBJECT_FOLDER, getPathToFeature(featureName)));
+        callServicesWithTag(args);
     }
 
     @Given("^the user calls list of api services from \"([^\"]*)\" api object$")

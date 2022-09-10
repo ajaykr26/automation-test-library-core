@@ -1,6 +1,12 @@
 Feature: Get attribute value in a response
 
-  @getAttribute
-  Scenario: 
-    * def jsonPath = '$[0].' + attributeName
-    * def attributeValueToStore = karate.jsonPath(response, jsonPath)
+  @json
+  Scenario: json parsing
+    * def jsonpath = '$.' + attributeName
+    * def attributeValue = karate.jsonPath(response, jsonpath)
+
+
+  @xml
+  Scenario: xml parsing
+    * def xpath = '//' + attributeName
+    * def attributeValue = karate.xmlPath(responseXml, xpath)

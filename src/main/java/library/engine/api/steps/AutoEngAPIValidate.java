@@ -14,27 +14,25 @@ import static library.engine.core.AutoEngCoreParser.parseValue;
 
 public class AutoEngAPIValidate extends AutoEngAPIBaseSteps {
 
-    @Given("^the user validate that the api response status code is \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
-    public void sendRequestWithoutTag(String comparisonOperator, String valueToFind, String validationId, String failureFlag) {
+    @Given("^the user \"([^\"]*)\" to validate that the api response status code is \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
+    public void validateStatusCode(String comparisonType, String comparisonOperator, String valueToFind, String validationId, String failureFlag) {
         valueToFind = parseValue(valueToFind);
         String actualResult = TestContext.getInstance().testdataGet(RESPONSE_STATUS).toString();
-        AssertHelper validator = new AssertHelper(ComparisonType.COMPARE_STRING, ComparisonOperator.valueOfLabel(comparisonOperator), failureFlag);
+        AssertHelper validator = new AssertHelper(ComparisonType.valueOfLabel(comparisonType), ComparisonOperator.valueOfLabel(comparisonOperator), failureFlag);
         validator.performValidation(actualResult, valueToFind, validationId, "validation successful");
     }
 
-    @Given("^the user validates that the value at jsonpath \"([^\"]*)\" in the api response \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
-    public void setAttributeInPayload(String jsonPath, String dictionaryKey) {
-        dictionaryKey = parseDictionaryKey(dictionaryKey);
-        String valueToStore = JsonPath.read(TestContext.getInstance().testdataGet(RESPONSE), jsonPath);
-        TestContext.getInstance().testdataPut(dictionaryKey, valueToStore);
+    @Given("^the user \"([^\"]*)\" to validate that the value located at \"([^\"]*)\" path in api response \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
+    public void validateValueAtJsonpath(String comparisonType, String locator, String format, String comparisonOperator, String valueToFind, String validationId, String failureFlag) {
+        valueToFind = parseValue(valueToFind);
+        String actualResult = "";
+        if (format.equalsIgnoreCase("json")) {
+            actualResult = JsonPath.read(TestContext.getInstance().testdataGet(RESPONSE), locator);
+        } else {
+            actualResult = getValueFromXmlDocumentByXpath(TestContext.getInstance().testdataGet(RESPONSE_XML).toString(), locator);
+        }
+        AssertHelper validator = new AssertHelper(ComparisonType.valueOfLabel(comparisonType), ComparisonOperator.valueOfLabel(comparisonOperator), failureFlag);
+        validator.performValidation(actualResult, valueToFind, validationId, "validation successful");
     }
-
-    @Given("^the user validates that the value at xpath \"([^\"]*)\" in the api response \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\"$")
-    public void storeValueFromXmlResponse(String xpath, String dictionaryKey) {
-        dictionaryKey = parseDictionaryKey(dictionaryKey);
-        String valueToStore = getValueFromXmlDocumentByXpath(TestContext.getInstance().testdataGet(RESPONSE_XML).toString(), xpath);
-        TestContext.getInstance().testdataPut(dictionaryKey, valueToStore);
-    }
-
 
 }

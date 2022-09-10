@@ -89,6 +89,7 @@ public class AutoEngFormatter implements ConcurrentEventListener {
             setWindowType(event.testStep.getCodeLocation());
             final PickleStepTestStep testStep = (PickleStepTestStep) event.testStep;
             String stepText = getStepDescription(testStep, lastStepStatus.get());
+            getReporter().addStepLog(getStepStatus(lastStepStatus.get()), stepText);
             if (isBeforeStep(event.testStep.getCodeLocation(), testStep.getPickleStep().getText())) {
                 screenshotPath.set(screenshotHandler.get().addScreenshotPath(stepText, lastStepStatus.get()));
                 addScreenCaptureToReport(screenshotPath.get());
@@ -104,8 +105,7 @@ public class AutoEngFormatter implements ConcurrentEventListener {
         if (event.testStep instanceof PickleStepTestStep) {
             final PickleStepTestStep testStep = (PickleStepTestStep) event.testStep;
             String stepText = getStepDescription(testStep, lastStepStatus.get());
-            getReporter().addStepLog(getStepStatus(event.result.getStatus()), stepText);
-
+//            getReporter().addStepLog(getStepStatus(event.result.getStatus()), stepText);
             if (screenshotPath.get().equalsIgnoreCase(ERROR_RESPONSE)) {
                 screenshotPath.set(screenshotHandler.get().addScreenshotPath(stepText, event.result.getStatus()));
                 addScreenCaptureToReport(screenshotPath.get());
